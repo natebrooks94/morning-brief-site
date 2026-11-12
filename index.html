@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#121413">
+<title>Nate's Morning Brief</title>
+<link rel="apple-touch-icon" href="img/icon.png">
+<link rel="icon" href="img/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600;700&display=swap">
+<style>
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+img { max-width: 100%; }
+/* Layout: reserved dark news edition — dateline bar, centered serif nameplate over a double rule, markets strip, front page of ruled columns, then sections with a green rule and serif heads. Forest-green accent, charcoal neutrals with a slight green bias. Dark only, by design. */
+:root {
+  --bg: #121413;
+  --surface: #191c1a;
+  --fg: #e7e9e5;
+  --body: #c9cec7;
+  --muted: #8d958b;
+  --rule: #2a2f2b;
+  --rule-strong: #434a44;
+  --accent: #517f34;
+  --accent-text: #94c26e;
+  --up: #7cc68b;
+  --down: #e5877b;
+  --amber: #d4b260;
+  --font-head: "Newsreader", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --font-ui: "Libre Franklin", "Franklin Gothic Medium", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-head); font-size: 17px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 56px;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+a { color: var(--accent-text); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 2px; border-radius: 2px; }
+.wrap { max-width: 1080px; margin: 0 auto; }
+.mono { font-family: var(--font-ui); font-variant-numeric: tabular-nums; }
+
+/* Dateline + nameplate */
+.dateline { display: flex; justify-content: space-between; gap: 8px 20px; flex-wrap: wrap; font-family: var(--font-ui); font-size: .75rem; color: var(--muted); padding-block: 14px 10px; border-bottom: 1px solid var(--rule); }
+.dateline b { color: var(--fg); font-weight: 600; }
+.mast { text-align: center; padding-block: 22px 14px; border-bottom: 3px double var(--rule-strong); }
+.mast h1 { font-family: var(--font-head); font-weight: 600; font-size: clamp(2.3rem, 6.5vw, 3.6rem); line-height: 1; letter-spacing: -.01em; margin: 0; }
+.mast .tagline { font-family: var(--font-ui); font-size: .72rem; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); margin-top: 8px; }
+.banner { margin-top: 16px; border-left: 3px solid var(--amber); padding: 4px 0 4px 12px; font-family: var(--font-ui); font-size: .8rem; color: var(--muted); line-height: 1.55; }
+.banner b { color: var(--amber); font-weight: 600; }
+/* Markets strip */
+.ticker { margin-top: 18px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); }
+.tick { padding: 10px 12px; border-right: 1px solid var(--rule); min-width: 0; font-family: var(--font-ui); }
+.tick:last-child { border-right: 0; }
+.tick .k { font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+.tick .v { font-size: 1rem; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 2px; }
+.tick .d { font-size: .78rem; font-variant-numeric: tabular-nums; }
+.up { color: var(--up); } .down { color: var(--down); } .flat { color: var(--muted); }
+.ticker-note { font-family: var(--font-ui); font-size: .7rem; color: var(--muted); padding-top: 6px; }
+
+/* Section nav */
+.jump { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--rule); margin-top: 14px; overflow-x: auto; }
+.jump ul { list-style: none; margin: 0; padding: 11px 0; display: flex; gap: 22px; white-space: nowrap; font-family: var(--font-ui); font-size: .76rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+.jump a { color: var(--body); }
+.jump a:hover { color: var(--accent-text); text-decoration: none; }
+
+/* Kicker labels */
+.label { font-family: var(--font-ui); font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--accent-text); }
+
+/* Front page */
+.front { margin-top: 30px; }
+.front h2 { font-family: var(--font-head); font-weight: 600; font-size: 1.9rem; margin: 2px 0 16px; }
+.hitgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
+@media (max-width: 720px) { .hitgrid { grid-template-columns: 1fr; } }
+.hits { border-top: 1px solid var(--rule); padding-block: 14px 18px; min-width: 0; }
+.hits.lead { grid-column: 1 / -1; border-top: 3px solid var(--accent); }
+.hits h3 { font-family: var(--font-ui); font-weight: 700; font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; margin: 0 0 8px; color: var(--accent-text); }
+.hits ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.hits li { font-family: var(--font-head); font-size: 1.05rem; line-height: 1.38; font-weight: 500; }
+.hits.lead li:first-child { font-size: 1.4rem; font-weight: 600; line-height: 1.25; }
+.hits li a { color: var(--fg); }
+.hits li a:hover { color: var(--accent-text); text-decoration: none; }
+
+/* Sections */
+section.sec { margin-top: 56px; scroll-margin-top: 56px; }
+.sec-head { border-top: 3px solid var(--accent); padding-top: 10px; display: flex; align-items: baseline; justify-content: space-between; gap: 6px 16px; flex-wrap: wrap; }
+.sec-head h2 { font-family: var(--font-head); font-weight: 600; font-size: clamp(1.6rem, 4vw, 2.1rem); margin: 0; line-height: 1.1; }
+.sec-head .label { color: var(--muted); }
+.status { margin-top: 16px; background: var(--surface); border: 1px solid var(--rule); padding: 12px 16px; font-family: var(--font-ui); font-size: .9rem; line-height: 1.55; color: var(--body); }
+.status b { font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; display: block; color: var(--accent-text); margin-bottom: 3px; }
+.sub { font-family: var(--font-ui); font-weight: 700; font-size: .74rem; text-transform: uppercase; letter-spacing: .1em; margin: 30px 0 0; padding-bottom: 6px; color: var(--muted); border-bottom: 1px solid var(--rule); }
+.items { display: grid; }
+article.item { padding-block: 20px; border-bottom: 1px solid var(--rule); scroll-margin-top: 56px; }
+article.item:last-child { border-bottom: 0; }
+article.item h3 { font-family: var(--font-head); font-weight: 600; font-size: 1.32rem; line-height: 1.25; margin: 0 0 8px; text-wrap: balance; }
+article.item p, article.item ul { margin: 0 0 10px; max-width: 66ch; color: var(--body); }
+article.item ul { padding-left: 20px; }
+.why { font-family: var(--font-ui); font-size: .88rem; color: var(--muted); }
+.why strong { color: var(--fg); font-weight: 600; }
+.src { font-family: var(--font-ui); font-size: .74rem; color: var(--muted); line-height: 1.8; }
+.src a { margin-right: 12px; }
+.tag { display: inline-block; font-family: var(--font-ui); font-size: .62rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; padding: 1px 6px; border: 1px solid currentColor; border-radius: 2px; vertical-align: 3px; margin-left: 8px; white-space: nowrap; }
+.tag.unconf { color: var(--down); }
+.tag.lean { color: var(--amber); }
+.tag.new { color: var(--muted); border-color: var(--rule-strong); }
+
+/* Tables */
+.tbl { overflow-x: auto; margin-top: 8px; }
+table { border-collapse: collapse; width: 100%; font-family: var(--font-ui); font-size: .86rem; color: var(--body); }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-size: .66rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.win { font-weight: 700; color: var(--fg); }
+
+details { margin-top: 16px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+summary { cursor: pointer; padding: 12px 0; font-family: var(--font-ui); font-size: .74rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--body); }
+details .inner { padding: 0 0 14px; }
+footer { margin-top: 56px; font-family: var(--font-ui); font-size: .72rem; color: var(--muted); border-top: 3px double var(--rule-strong); padding-top: 12px; text-align: center; }
+/* Madrid corner */
+.madrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 28px; margin-top: 18px; }
+@media (max-width: 760px) { .madrid { grid-template-columns: 1fr; gap: 20px; } }
+.phrase { border-left: 3px solid var(--accent); padding: 4px 0 4px 16px; align-self: start; }
+.phrase .es { font-family: var(--font-head); font-size: 1.7rem; font-weight: 600; line-height: 1.2; margin: 6px 0 4px; }
+.phrase .say { font-family: var(--font-ui); font-size: .8rem; color: var(--muted); letter-spacing: .02em; }
+.phrase .en { font-family: var(--font-head); font-style: italic; font-size: 1.1rem; color: var(--body); margin: 10px 0 8px; }
+.phrase .note { font-family: var(--font-ui); font-size: .85rem; color: var(--muted); line-height: 1.55; margin: 0; }
+.place figure { margin: 0; }
+.place img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; max-width: 100%; }
+.place figcaption { font-family: var(--font-ui); font-size: .7rem; color: var(--muted); padding-top: 6px; }
+.place h3 { font-family: var(--font-head); font-weight: 600; font-size: 1.32rem; line-height: 1.25; margin: 6px 0 6px; }
+.place p { margin: 0 0 10px; color: var(--body); }
+.place .label { display: block; margin-top: 14px; }
+.facts { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; font-family: var(--font-ui); font-size: .82rem; color: var(--body); margin: 10px 0; }
+.facts dt { color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: .66rem; letter-spacing: .08em; padding-top: 3px; }
+.facts dd { margin: 0; }
+.mbrief { list-style: none; margin: 8px 0 0; padding: 0; display: grid; }
+.mbrief li { padding-block: 12px; border-bottom: 1px solid var(--rule); color: var(--body); max-width: 70ch; }
+.mbrief li:last-child { border-bottom: 0; }
+.mbrief b { color: var(--fg); font-weight: 600; }
+.mbrief .src { display: block; margin-top: 2px; }
+.log-sec { margin-top: 56px; }
+.log-sec details + details { margin-top: 0; border-top: 0; }
+.log-sec .note { font-family: var(--font-ui); font-size: .78rem; color: var(--muted); margin: 0 0 8px; }
+/* Update button */
+.upd { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.update-btn { font-family: var(--font-ui); font-size: .68rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--accent-text); background: transparent; border: 1px solid var(--rule-strong); border-radius: 2px; padding: 3px 9px; cursor: pointer; }
+.update-btn:hover:not(:disabled) { border-color: var(--accent-text); }
+.update-btn:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 2px; }
+.update-btn:disabled { opacity: .55; cursor: default; }
+.update-msg { color: var(--muted); }
+.update-msg.warn { color: var(--amber); }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+
+/* Code-version fixes: keep item columns at screen width on phones. */
+.items { grid-template-columns: minmax(0, 1fr); }
+article.item, .mbrief li, .status { overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="dateline"><span><b>Thursday, November 12, 2026</b> · Chicago</span><span class="upd">Updated 11:40 AM CT · Brief #7</span></div>
+  <header class="mast">
+    <h1>The Morning Brief</h1>
+    <div class="tagline">Iran · News · Markets · Tech · Sports · Music</div>
+  </header>
+
+  <div class="ticker" role="list" aria-label="Markets at the latest close">
+    <div class="tick" role="listitem"><div class="k">S&amp;P 500</div><div class="v">7,623.82</div><div class="d up">+0.06%</div></div>
+    <div class="tick" role="listitem"><div class="k">Nasdaq Comp</div><div class="v">25,436.19</div><div class="d down">-0.12%</div></div>
+    <div class="tick" role="listitem"><div class="k">Dow</div><div class="v">52,648.15</div><div class="d up">+0.31%</div></div>
+    <div class="tick" role="listitem"><div class="k">10-yr yield</div><div class="v">5.10%</div><div class="d up">+10 bp</div></div>
+    <div class="tick" role="listitem"><div class="k">WTI</div><div class="v">$87.30</div><div class="d up">+0.89%</div></div>
+    <div class="tick" role="listitem"><div class="k">Brent</div><div class="v">$94.23</div><div class="d up">+1.58%</div></div>
+  </div>
+  <div class="ticker-note">Index levels are live as of 11:23 AM CT; yield and oil are the latest quotes. Futures as of Thu 11:13 AM CT: S&amp;P 500 +0.2%, Nasdaq 100 +0.0%, Dow +0.3%. Data: Yahoo Finance.</div>
+
+  <nav class="jump" aria-label="Sections">
+    <ul>
+      <li><a href="#front">Front page</a></li>
+      <li><a href="#iran">Iran</a></li>
+      <li><a href="#news">News</a></li>
+      <li><a href="#markets">Markets</a></li>
+      <li><a href="#tech">Tech</a></li>
+      <li><a href="#sports">Sports</a></li>
+      <li><a href="#music">Music</a></li>
+      <li><a href="#madrid">Madrid</a></li>
+    </ul>
+  </nav>
+
+  <!-- FRONT PAGE -->
+  <section class="front" id="front">
+    <div class="label">Quick hitters</div>
+    <h2>Front Page</h2>
+    <div class="hitgrid">
+      <div class="hits lead">
+        <h3>Iran</h3>
+        <ul>
+          <li><a href="#iran-talks">Trump says the US doesn't need an Iran deal and pulls Vance off the talks a day after WSJ said he'd been told to restart them.</a></li>
+          <li><a href="#iran-hormuz">Iran says four tankers were hit by explosions in Hormuz; UKMTO reports a separate projectile strike off Ras Al-Khaimah.</a></li>
+          <li><a href="#iran-israel">Netanyahu orders the military to prepare for a possible major strike on Iran, per Kan; Eisenkot pushes back.</a></li>
+        </ul>
+      </div>
+      <div class="hits">
+        <h3>News</h3>
+        <ul>
+          <li><a href="#news-colom">Democrat Scott Colom unseats Sen. Cindy Hyde-Smith, Mississippi's first Black senator since Reconstruction.</a></li>
+          <li><a href="#news-ukraine">US envoys meet Putin in Moscow, then head to Dublin to see Zelensky.</a></li>
+        </ul>
+      </div>
+      <div class="hits">
+        <h3>Markets</h3>
+        <ul>
+          <li><a href="#mkt-nvidia">Jensen Huang resigns from Nvidia; shares open down 14%, then recover about half the loss as the S&amp;P turns green.</a></li>
+          <li><a href="#mkt-fed">10-year yield rises to 5.10% as Fed officials talk tougher on inflation.</a></li>
+        </ul>
+      </div>
+      <div class="hits">
+        <h3>Tech</h3>
+        <ul>
+          <li><a href="#ai-chips">Axios: Lutnick stalled Trump-approved curbs on Nvidia chip diversion to China three times.</a></li>
+          <li><a href="#game-gdc">GDC survey: 40% of game developers use generative AI; one in three was laid off in two years.</a></li>
+        </ul>
+      </div>
+      <div class="hits">
+        <h3>Sports</h3>
+        <ul>
+          <li><a href="#nba">Stephen Curry has an oblique tear and will be re-evaluated in two weeks.</a></li>
+          <li><a href="#nfl">Commanders at Giants tonight at 7:15 PM CT; McCarthy and Skattebo will play.</a></li>
+        </ul>
+      </div>
+      <div class="hits">
+        <h3>Music</h3>
+        <ul>
+          <li><a href="#music-beezy">Yella Beezy is convicted of capital murder in MO3's killing and gets life.</a></li>
+          <li><a href="#music-releases">Offset's <i>GMFU</i> and Tay-K's album arrive Friday.</a></li>
+        </ul>
+      </div>
+      <div class="hits">
+        <h3>Madrid Corner</h3>
+        <ul>
+          <li><a href="#madrid">Barrio de las Letras, plus how to say "no pasa nada".</a></li>
+          <li><a href="#madrid-news">Flood pre-emergency and a red alert on the Manzanares in Rivas as storms hit.</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- IRAN -->
+  <section class="sec" id="iran">
+    <div class="sec-head"><h2>Iran Conflict &amp; Fallout</h2><span class="label">Diplomacy · Hormuz · Energy</span></div>
+    <div class="status"><b>Status</b>There are no talks and no ceasefire. Trump says Washington doesn't need a deal and has taken Vance off the file. Tanker attacks in Hormuz continue while the US enforces its naval blockade, and Israel is reportedly preparing for a possible major strike.</div>
+    <div class="items">
+<article class="item" id="iran-talks">
+        <h3>Trump: 'We don't need a deal with Iran,' pulls Vance off talks<span class="tag new">Developing · Day 7</span></h3>
+        <p>New today: Trump wrote on Truth Social that the US no longer needs a deal because "we've got their Strait," and told VP Vance to put his full attention on alleged corruption in Democratic-run states and cities. The New York Times, Washington Post and Reuters all report this as an end to Vance's negotiating role. It reverses a WSJ report from Wednesday that Trump had told Vance to restart talks right away and that Vance was weighing face-to-face talks with Iran's security chief Mohsen Rezaei. Oil rose on the post.</p>
+        <p>Tehran's position is just as hard. Rezaei said Iran won't let "a single particle" of enriched material leave the country because it needs the fuel for planned nuclear-powered ships and submarines. He also said any US base used in a new war would be a target, including bases in Europe. Basij chief Hossein Taeb said Washington must accept seven conditions before talks can start, though Tehran has never published them<span class="tag lean">Opposition-leaning</span>. On Veterans Day, Trump said the US had won but wants "a total victory, not a 93% victory."</p>
+        <p class="why"><strong>Why it matters:</strong> With both sides refusing to talk, the lower oil prices of recent weeks depend on the blockade holding, not on any deal.</p>
+        <div class="src">Sources: <a href="https://x.com/JavierBlas/status/2120877211687309361">Javier Blas (X)</a><a href="https://news.google.com/rss/articles/CBMivwFBVV95cUxNTkdBWnZVWXZqcEFwdWFkTmw5XzVHVndjNzBhdW1GZVFfT2d2OFBzVDlLbC1pdmNvZTY5X01iRE01eGktRlh0b0s2bXJSTm9ZS19CZkdnVzR6bmEzOFJlQjNET2NvTl9yVGZjeHg5SkxVcmZ5UHFkLXcxQ1M3N1dRU3R5R05raV9VOVRsUDRFZE9sT1B6NmZ0ZTA4SFB0TlNYTUNhUHdMWVNKV0tDSmd4d19IRERyblE2QkgxSlpzSQ?oc=5">Reuters</a><a href="https://news.google.com/rss/articles/CBMiuwFBVV95cUxPYnhHOUZCeEwzbmN5alpPZm1fbjRvQ2ltdmYydUE0VE02ZnMtYzhOLUp3eWotVXQ5aTYwSFlpYXZyWmRsRjhBRi1iS08zMWJFYUNVQnZLNXY5TnRsN0p4cVF1eVppQ0hsa1I5Y0hLaWlOMmRzZWV0Q09hdlpOal9YSVJOdXNPZFVyYlZQemhFeVRGUUUwOE1CcEZIRHR1Ul9wckU5WVBVeTh0TTBKaGtDN091X0hxM1BYUjNz?oc=5">The Washington Post</a><a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE9GVkpKYjhub0lKY3JLamNqdW91aWl4YnAwbVZZV3J5YWR6b1k4SnBXcWRkOWJSOUdFcXlLUHl5WlNuYU1tNlF2TFF4bkxudVVtYUVIWG0wb2RRR0J4YkQ2eWRpMUxOdzFldHRfT0hPMGpSVEhHcFRTT1QwSENIckk?oc=5">The New York Times</a><a href="https://news.google.com/rss/articles/CBMieEFVX3lxTFA4czhrTDFUUEFqZEpnSlBqckpLblhla05UcUVTRU5adzJGR3dXbWJQb3ZTMmtfb2F6eEhfRUJ4NU9qSTczTW9md0ZzSmVLa3VhWTA5LVRJME9MQmVPOXpZTlVZZExqcnRvUzRudkZMYWhXd2syNFZnVg?oc=5">Politico</a><a href="https://news.google.com/rss/articles/CBMie0FVX3lxTFBVb1gtMkRDeHpTaFpaWTJiT01JTEFtMEItb3gyY0ZEX2RLZ0N2ZURlOEs5TGhqYlVRSXd5SEhfXzV1UlZ2MFFyUnd6aVVocF81dXF5c25pcktfZVVNY01Nc1poS1VwTXFVSWhrNk11QjBMRllsaE40LTMydw?oc=5">Axios</a><a href="https://x.com/HormuzLetter/status/2120612975018955227">The Hormuz Letter (X)</a><a href="https://x.com/IranIntl_En/status/2120713210097467787">Iran International English (X)</a><a href="https://x.com/IranIntl_En/status/2120643701542383918">Iran International English (X) 2</a><a href="https://x.com/IranIntl_En/status/2120659831715754495">Iran International English (X) 3</a><a href="https://x.com/IranIntl_En/status/2120770546598027518">Iran International English (X) 4</a><a href="https://x.com/IranIntl_En/status/2120880371579363576">Iran International English (X) 5</a><a href="https://x.com/IranIntl_En/status/2120821569316421924">Iran International English (X) 6</a><a href="https://news.google.com/rss/articles/CBMinwFBVV95cUxNVG5RS0lub0RlMzltTEJDNkVKUVVmdnNHcG14bGRMQ0pFeTJ1NW9ibkk4dVI5TExfNVMzclpKYTI1d3FnQXdEVldRZmJnZWxHZXlUWDZHWmJPRUxhQ2xxNVpLSDFvTFFKOFpScEZSMVI2eW1EcFlwM2YyZXBHNzctVDAxNVFpd2ZCUVZIUnAyVDdiRm5IWDBfbDNyUWdMSzg?oc=5">WSJ</a> · Axios Macro (newsletter)</div>
+      </article>
+<article class="item" id="iran-hormuz">
+        <h3>Iran says four tankers hit by explosions; UAE-area tanker struck by projectile<span class="tag new">Developing · Day 6</span></h3>
+        <p>New today: Iran says four tankers were struck by explosions in the Strait of Hormuz, according to Reuters. The IRGC Navy said two supertankers carrying more than 4 million barrels were stopped after blasts on an "unauthorized" southern route<span class="tag lean">State media</span>, and Iran's army said two tankers hit naval mines<span class="tag lean">State media</span>. Separately, UKMTO and Ambrey say a tanker was hit by an unidentified projectile about 14 nautical miles northwest of Ras Al-Khaimah on Wednesday. The projectile started an engine-room fire, and all crew are safe.</p>
+        <p>CENTCOM says US forces are keeping the strait open and strictly enforcing the blockade, including against IRGC use of land routes and the Caspian. An Iranian general told ISNA the strait is closed until the Supreme Leader orders otherwise<span class="tag lean">State media</span>. The NYT reports that Iraq, Turkey and Pakistan are resisting US pressure to shut Iran's land trade. Bahrain has called a UN Security Council meeting on Gulf maritime security for Friday.</p>
+        <p class="why"><strong>Why it matters:</strong> These are the first claimed tanker hits since Sunday, and they come right after freight rates started to fall.</p>
+        <div class="src">Sources: <a href="https://news.google.com/rss/articles/CBMitwFBVV95cUxQcDQ2cWxyeTFpazFaX1ZNM2RoS0t2ZVpEa0JpMElTZVFMUElROEF5c20tMlU0dEszWFlEdkhfR2VOb3hEQmo3MjRtdVlSaEhkZnpKXzExbE5QcXItQ3Z6REoyY1Fpak9IUUplYWp6NTQ2UjBiNVk1WDN0MmJjaFRkOHNLdDYxMU9xOWhuMnVaTlNiVXJNTlhLYV9EZEpnd1oxYmF0cG82b2VkMURkYnkzZkZBX0hhWHM?oc=5">Reuters</a><a href="https://news.google.com/rss/articles/CBMijgFBVV95cUxNWDI5MGxiUVVhallvSEhhZUo1NVV4WjVSMkVHMjhsRVVwRVI4aFozVzQ2eUpCaDNZTERpcjNZMEtmaC16WF9zWHhRYUNTcGNxQjJjelpWc3NibGpfaUsyTHEwOWxXNHdPbWswSGlNVzFJeHE3bUZDWmVYTjZTNHIzVjFqNnJLalBZUmZiSG1B?oc=5">Arab News</a><a href="https://x.com/IranIntl_En/status/2120773645828051218">Iran International English (X)</a><a href="https://x.com/IranIntl_En/status/2120892720428519463">Iran International English (X) 2</a><a href="https://x.com/IranIntl_En/status/2120869853963702467">Iran International English (X) 3</a><a href="https://news.google.com/rss/articles/CBMiygFBVV95cUxOeDlHRUduYXpITEh6ZXlxdm9Zc3hiVXlhZXhzbzUySkFvNkMyQ1pFYWlxbnZKUmR4T0tieF9rZHhWYnFzUXI2a0J4M2VOLUZPcGt3ckxrUzNrSFFfeXpXNDJjRzVIS2p6OWI5d1BhMHVzVVY4TktOaWJQYTJpenFZOXpISzBiUDZ5ZG5vVGE2U0U5RnFjQmlaRmNnUDk0YV9DRnl6UVRkOEtGR1RJdUF2VmxNRmVpN1lDeXRINVdYQ0xabGJkMTMwazNR?oc=5">Reuters 2</a><a href="https://x.com/IranIntl_En/status/2120816316038734059">Iran International English (X) 4</a><a href="https://x.com/CENTCOM/status/2120578655655014848">U.S. Central Command (X)</a><a href="https://x.com/FirstSquawk/status/2120611080523379033">First Squawk (X)</a><a href="https://x.com/IranIntl_En/status/2120668602462314913">Iran International English (X) 5</a><a href="https://x.com/IranIntl_En/status/2120732684486103130">Iran International English (X) 6</a></div>
+      </article>
+<article class="item" id="iran-israel">
+        <h3>Netanyahu orders preparations for possible major strike; Eisenkot objects<span class="tag new">New</span></h3>
+        <p>Kan reports that caretaker PM Netanyahu ordered the military to step up preparations for a possible major strike on Iran. An Israeli security official said the directives "could trigger wide-scale war." Gadi Eisenkot, who is trying to form the next government, warned Netanyahu in a letter against major military moves before a new government takes office, then met him Thursday for a security briefing. Defense Minister Katz said Israel will act against Iran as needed and doesn't need the opposition's approval.</p>
+        <p class="why"><strong>Why it matters:</strong> An Israeli strike would end the current pause in direct fighting.</p>
+        <div class="src">Sources: <a href="https://x.com/HormuzLetter/status/2120653302560104544">The Hormuz Letter (X)</a><a href="https://x.com/IranIntl_En/status/2120636874847035885">Iran International English (X)</a><a href="https://www.al-monitor.com/originals/2026/11/eisenkot-meets-netanyahu-bid-avoid-iran-strikes">Al-Monitor</a><a href="https://x.com/Amena__Bakr/status/2120888921189929221">Amena Bakr (X)</a><a href="https://x.com/IranIntl_En/status/2120777810335727728">Iran International English (X) 2</a></div>
+      </article>
+<article class="item" id="iran-europe">
+        <h3>UK convicts two men of spying on Iran International journalists; France adds sanctions<span class="tag new">Developing · Day 2</span></h3>
+        <p>New today: A London jury convicted Mostafa Sepahvand and Farhad Javadi Manesh of helping Iranian intelligence target Iran International journalists in Britain. UK counterterrorism police say people linked to the Iranian state tasked them. ITV reports a seven-man network working for Iranian intelligence used local criminals to coordinate attacks on Jewish communities across Europe. France says it will tighten sanctions on Iran over the October cyberattack that hit refrigeration systems at more than 700 retail sites. Zelenskyy warned that sending air-defense missiles to the Middle East is weakening Ukraine.</p>
+        <div class="src">Sources: <a href="https://x.com/IranIntl_En/status/2120844534514885035">Iran International English (X)</a><a href="https://news.google.com/rss/articles/CBMinwFBVV95cUxOZ3F1cE16TmpHTEVmY09GUnBadGhGUXJzaUd3Y2tlaW9ocXJ5UzQycG90QlZ0cnVUZWZ6cy00am5ZSHpWblAyLTRONkstSE5hY2hCa1FsSFJkdUVOQklCTEZTNUdYT21wY010aGFkR19CVUNzbm9fMk9Dczl2RE5kdU9HWjdZbmZLank0a2RDX2VvazdScEc5VnpFSzFQblnSAaQBQVVfeXFMTTN6T1IwSWRwUzRsSUZkRktmcmJkTUlmWFE0aWRHYUZ0WkNYQWtIVTFUNklHcjBqMEdtTHAzOHItbFhBeWRUZHhKa18yVklKeEVoUGx1ZnF0c0padnJPWmtsZjFBWUhFZWlYUFBVVEVFWFZxaWpBN2RzOHd3THdscVB4TDlpWDFmaEhKVm9nM19saFBNdm54dEVublozT2FaSGN6bmM?oc=5">Al Jazeera</a><a href="https://x.com/IranIntl_En/status/2120875294609248495">Iran International English (X) 2</a><a href="https://x.com/IranIntl_En/status/2120796509188870272">Iran International English (X) 3</a><a href="https://x.com/IranIntl_En/status/2120793219654905888">Iran International English (X) 4</a><a href="https://x.com/IranIntl_En/status/2120641738700128315">Iran International English (X) 5</a></div>
+      </article>
+<article class="item" id="iran-energy">
+        <h3>Freight rates fall fast; US gasoline drops; Europe's gas stocks under pressure<span class="tag new">Developing · Day 2</span></h3>
+        <p>New today: Javier Blas says oil freight rates on several routes west of Suez have fallen 50% to 75% in a few days. The Gulf of Oman to northeast Asia route is down about 60% since Oct 15. Counting crude, physical premiums and freight together, landed oil prices at refineries are 35% to 40% below their mid-September peak. In Europe, John Kemp warns gas storage is on course to run critically low before winter ends, even as high prices pull LNG away from Asia. The EU has already spent more on Russian LNG this year than in all of 2025, ahead of a January ban.</p>
+        <p>In the US, retail gasoline posted its biggest one-day drop in 18 years on Wednesday and fell sharply again Thursday. GasBuddy has the national average at $3.899, the lowest since July 14, with diesel at $6.099. In the Gulf, the Houthis claimed a drone strike on an oil pumping station in Yanbu, and Saudi Arabia says debris from two intercepted missiles fell in the Mecca region. Riyadh is also pushing the EU to list the Houthis as a terrorist group.</p>
+        <p class="why"><strong>Why it matters:</strong> If the drop holds, US gasoline could hit an 8-month low by Thanksgiving, though Trump's no-deal post is already lifting crude.</p>
+        <div class="src">Sources: <a href="https://x.com/JavierBlas/status/2120802801173381217">Javier Blas (X)</a><a href="https://x.com/JavierBlas/status/2120920859095306729">Javier Blas (X) 2</a><a href="https://x.com/JKempEnergy/status/2120573520438792452">John Kemp (X)</a><a href="https://oilprice.com/Latest-Energy-News/World-News/EU-Imports-of-Russian-LNG-Top-2025-Value-Ahead-of-January-Ban.html">OilPrice.com</a><a href="https://x.com/JavierBlas/status/2120848679309553987">Javier Blas (X) 3</a><a href="https://x.com/GasBuddyGuy/status/2120675019193741636">Patrick De Haan (X)</a><a href="https://x.com/IranIntl_En/status/2120591953276588236">Iran International English (X)</a><a href="https://x.com/IranIntl_En/status/2120693687932072011">Iran International English (X) 2</a><a href="https://www.al-monitor.com/originals/2026/11/saudi-arabia-puts-pressure-eu-label-yemens-houthis-terrorist-group">Al-Monitor</a></div>
+      </article>
+<article class="item" id="iran-brief">
+        <h3>In brief<span class="tag new">New</span></h3>
+        <p>MS NOW audio reportedly shows USS George H.W. Bush families being told the carrier won't be home for the holidays because of expected escalation with Iran<span class="tag unconf">Unconfirmed</span>. NewsNation says AG Todd Blanche has moved to a military base over Iranian threats<span class="tag unconf">Unconfirmed</span>. Iran's Assembly of Experts called for a review of defense doctrine, which could open the way to dropping the religious ban on nuclear weapons<span class="tag lean">Opposition-leaning</span>. The UN General Assembly elected Iran to a program committee with 144 votes, and Canada voted no. Iran told COP31 it wants compensation for environmental damage from the strikes.</p>
+        <div class="src">Sources: <a href="https://x.com/HormuzLetter/status/2120777217256935472">The Hormuz Letter (X)</a><a href="https://x.com/HormuzLetter/status/2120752528597963264">The Hormuz Letter (X) 2</a><a href="https://x.com/HormuzLetter/status/2120735370941727074">The Hormuz Letter (X) 3</a><a href="https://x.com/IranIntl_En/status/2120915334211276843">Iran International English (X)</a><a href="https://x.com/IranIntl_En/status/2120597869300224372">Iran International English (X) 2</a><a href="https://x.com/IranIntl_En/status/2120645099923357880">Iran International English (X) 3</a><a href="https://x.com/Reuters/status/2120705667702948213">Reuters (X)</a></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- NEWS -->
+  <section class="sec" id="news">
+    <div class="sec-head"><h2>National &amp; World</h2></div>
+    <div class="items">
+<article class="item" id="news-colom">
+        <h3>Scott Colom wins Mississippi Senate seat; Democrats reach 55-44<span class="tag new">New</span></h3>
+        <p>Democrat Scott Colom beat Republican Sen. Cindy Hyde-Smith after days of counting. He is Mississippi's first Black senator since Reconstruction and the first Democrat the state has sent to the Senate since 1982. He won the state by about 4,700 votes, carrying 16 of the 18 Delta counties. The result gives Democrats a 55-44 majority, with Alaska still uncalled and Democrat Mary Peltola narrowly ahead.</p>
+        <p class="why"><strong>Why it matters:</strong> Democrats' new Senate majority is bigger than expected and sets up next year's fights over oversight and immigration.</p>
+        <div class="src">Sources: <a href="https://x.com/AP/status/2120654501111595402">The Associated Press (X)</a><a href="https://x.com/Reuters/status/2120655721909928381">Reuters (X)</a><a href="https://www.theguardian.com/us-news/live/2026/nov/12/mississippi-scott-colom-ukraine-donald-trump">The Guardian (World)</a><a href="https://x.com/AJEnglish/status/2120876768416481303">Al Jazeera English (X)</a> · Axios AM / PM / Finish Line (newsletter)</div>
+      </article>
+<article class="item" id="news-ukraine">
+        <h3>Witkoff and Kushner meet Putin, then head to Dublin for Zelensky<span class="tag new">Developing · Day 4</span></h3>
+        <p>New today: US envoys Steve Witkoff and Jared Kushner met Putin in Moscow and were due in Dublin later Thursday to meet Zelensky. Witkoff said new talks involving Russia, Ukraine and European countries have been agreed. Ukraine says its military Starlink service was disrupted again. This week's Abu Dhabi round produced a large prisoner swap but no deal on territory.</p>
+        <div class="src">Sources: <a href="https://news.google.com/rss/articles/CBMiogFBVV95cUxOTFZuQ05KbXhLT294akRzMl9XWE5rUmRhV01fSDY4VVF6dnNaZVlCUzdCd1I2TnI0azFRT1VHcW1hVm9oMWhUNTZaVUc0QjNVNkNseGxYTGU3RmpSWXppTVZ4TzVRWEpxdE1tOVc3NDJYdFZmdWhoeFBvSXc4MXV4N0JUSW95SzlZalpwcERuU3hRNHpSbVBwNXl1Y19kUDU1d2c?oc=5">AP News</a><a href="https://www.theguardian.com/world/live/2026/nov/12/us-envoys-in-moscow-meeting-putin-abu-dhabi-trilateral-ukraine-ceasefire-talks-latest-news-updates">The Guardian (World)</a><a href="https://www.bbc.co.uk/news/articles/cwrkgmymk55zo?at_medium=RSS&amp;at_campaign=rss">BBC World</a><a href="https://x.com/AJEnglish/status/2120585396920709120">Al Jazeera English (X)</a></div>
+      </article>
+<article class="item" id="news-hegseth">
+        <h3>Tomb guard rebukes Hegseth's group; Pentagon backs the soldier<span class="tag new">New</span></h3>
+        <p>A sentinel at the Tomb of the Unknown Soldier called for "silence and respect" after laughter was heard from staff and advisers with Defense Secretary Pete Hegseth during a Veterans Day visit. The video spread widely, and the Pentagon has publicly backed the guard.</p>
+        <div class="src">Sources: <a href="https://x.com/AP/status/2120650415058407577">The Associated Press (X)</a><a href="https://x.com/Reuters/status/2120662334679220451">Reuters (X)</a><a href="https://www.bbc.co.uk/news/articles/cmvg2r3dq7xno?at_medium=RSS&amp;at_campaign=rss">BBC World</a></div>
+      </article>
+<article class="item" id="news-dc">
+        <h3>DC gym shooting: one dead, four hurt, suspect dead<span class="tag new">New</span></h3>
+        <p>A gunman opened fire at a VIDA Fitness gym near Logan Circle, about a mile from the White House, killing one person and wounding four, one critically. Police say the suspect, a gym member, shot himself while barricaded in an apartment and had an apparent dispute with the building's homeowners association.</p>
+        <div class="src">Sources: <a href="https://www.bbc.co.uk/news/articles/crgqx2qqnwpjo?at_medium=RSS&amp;at_campaign=rss">BBC News</a><a href="https://news.google.com/rss/articles/CBMijAFBVV95cUxQMW5zRmhTTGNjXzZqa1hiWG1oWmVLeGZzZmZiVkhjOEpqTlJiMVZudG1meElSb2d5djFtM0FSUzM0UVdtYXdRcVZReTBxUG5rMW9ZYVQ3MlFXTGhZRG5rZmZnay1ONXlEVzJWdFRKZ3VLZGRDNFVzU21oVkZHTkhCZGlDNTA2NlgzY3lhdw?oc=5">AP News</a><a href="https://www.theguardian.com/us-news/2026/nov/12/dc-shooting-logan-circle">The Guardian (US)</a><a href="https://x.com/AP/status/2120913558674305165">The Associated Press (X)</a></div>
+      </article>
+<article class="item" id="news-xi">
+        <h3>Xi says Taiwan 'reunification will be realised,' doesn't mention force<span class="tag new">New</span></h3>
+        <p>Speaking in Beijing, Xi Jinping offered Taiwan "one country, two systems" and pledged peaceful reunification, with no mention of force. Taiwan's president says Taipei is attending the APEC summit in China on an equal basis. Trump travels to Shenzhen next week for a summit with Xi.</p>
+        <div class="src">Sources: <a href="https://x.com/AJEnglish/status/2120811338234556513">Al Jazeera English (X)</a><a href="https://x.com/Reuters/status/2120752211462340881">Reuters (X)</a><a href="https://x.com/Reuters/status/2120735932202574049">Reuters (X) 2</a> · Axios AM / PM / Finish Line (newsletter)</div>
+      </article>
+<article class="item" id="news-brief">
+        <h3>In brief<span class="tag new">New</span></h3>
+        <p>Trump threatened to double tariffs on Mexico unless it stops a migrant caravan. The Brooklyn building collapse death toll has risen to 8. Indonesia's VP Gibran Rakabuming Raka resigned over disputed academic credentials. An Israeli strike on Gaza's Nasser Hospital killed six, the health ministry says. Senators will look into whether RFK Jr. misled Congress about a Samoa trip. Pakistan released two of Imran Khan's sisters. A 23-vehicle crash in the UAE killed 14. Italian schools stayed open after a second wave of bomb threats. The FDA shelved its commissioner's fast drug-review voucher program, according to Reuters sources.</p>
+        <div class="src">Sources: <a href="https://news.google.com/rss/articles/CBMisAFBVV95cUxNSzJwLS0tdmxjdGp1T3RFY29PR2JyaXRQVkVUREtlUkYzSWVfZ3ZwYlV0anNiTGc2VDlvQ2Y2UC1WZ1ZiTC1zOHJqYjRRcE9rVG0wSXpEUTZlN1E2Q0F3WmZsX1dDdG82NmtHYVpCNXJTTklFd05kMldLRGg0YktvX200bmZxSjJWZWVlUURielBYU0wtTTBRVjBKNEx4dWhrUjRndEQ2eHB0R2xvTmdZZQ?oc=5">Reuters</a><a href="https://news.google.com/rss/articles/CBMiqgFBVV95cUxQOTF0bXlzSWlmLWlkQWl1aE1xZzFRNjVtTXJtOFV4bUtGd2JQeGx0bjJ1bjRCQ2pUVFN2ejd2ZU5NZE5MVTdSNGpZbjU4RVV4MDVsQnRtLUZHV09LS0NYeWY1OGVaVkdWYk10Vy00UzdJY1lpSUYza2dWVGY3aC1vS3dCbDE2OVlHNHB5VVJYSDBSZi05eVNLcXRsMDZDWkJFZmYtMGxsN2hjQQ?oc=5">AP News</a><a href="https://x.com/AP/status/2120746221878878407">The Associated Press (X)</a><a href="https://x.com/AJEnglish/status/2120801270831436269">Al Jazeera English (X)</a><a href="https://www.bbc.co.uk/news/articles/ckzd9p7e4eqeo?at_medium=RSS&amp;at_campaign=rss">BBC World</a><a href="https://x.com/AP/status/2120920639104049549">The Associated Press (X) 2</a><a href="https://x.com/Reuters/status/2120909734752526818">Reuters (X)</a><a href="https://www.bbc.co.uk/news/articles/c804wp9013kvo?at_medium=RSS&amp;at_campaign=rss">BBC News</a><a href="https://news.google.com/rss/articles/CBMimwFBVV95cUxQSFJJaFJoR2JHVWdTZmVzdkw2MDhTc29qU0pDRmdmaXpwWjN2Q3VyYjlFUWJkRmJHTmlaNFFYdWIxdTFHR3p5VGlTaGExYzFwZ3BTRjV6dTJuQWdibllJN1lwd3E1RThuUEU2ekpfbU1GSUJwU2tyMkd5a3daSEkwNm5YU19zUEIxLWpSNjNDS0lzT1NCd2ZQRG1COA?oc=5">Reuters 2</a><a href="https://news.google.com/rss/articles/CBMiugFBVV95cUxORWpkVElUa0dxMUx5dlJuNjBCTGI4ZVRRT0xkTDRpUl9zOVFJYzZfZ1JnaUREb2VacDlLUlBDWlVQdlhmY09hNzV2M2t1Z2Foc0xRSXpDUGdYcVlteEhBTEtGVlAzZno5WGNmWjQzZlIzSG1VcDNHU2U4N1p0UHZfM3VjYzBnWE9RV003TkFfUGthRUxBWUxtMndIQ0dsT2VmcnQ2ckxUbnpVZlV6U3VnSDBxTlpBU044Unc?oc=5">Reuters 3</a> · Axios Macro (newsletter)</div>
+      </article>
+    </div>
+  </section>
+
+  <!-- MARKETS -->
+  <section class="sec" id="markets">
+    <div class="sec-head"><h2>Markets</h2><span class="label">Macro · Tech · Oil &amp; Gas</span></div>
+    <div class="items">
+<article class="item" id="mkt-nvidia">
+        <h3>Huang out at Nvidia; shares crash at the open, then recover half<span class="tag new">Developing · Day 5</span></h3>
+        <p>New today: Jensen Huang resigned as Nvidia's CEO, president and board member, effective immediately. The move followed a New York Times report of a second affair, this one with a VP who reported to him. CFO Colette Kress is interim CEO, and former Synopsys CEO Harvey Jones becomes the company's first board chair. The release carried no quote from Huang, which Axios reads as a sign the exit wasn't his choice. Nvidia opened near $151, down 14%, erasing more than $600 billion and dropping the company below $4 trillion in value. Buyers stepped in, the stock climbed back above $163, and both the S&amp;P 500 and Nasdaq turned positive.</p>
+        <p>Bernstein, Oppenheimer, William Blair and Evercore all downgraded the stock. Trump said Apple's Tim Cook is the "only one man" for the job. Huang agreed to testify to Congress before Thanksgiving, and Semafor reports several DOJ probes could touch Nvidia. Neocloud stocks fell hard: Nebius dropped as much as 21% on a weak outlook and $40B to $45B in planned 2027 capex, and CoreWeave fell 14%. AMD gained 7.3% on Wednesday.</p>
+        <p class="why"><strong>Why it matters:</strong> Nvidia supplies and helps finance much of the AI industry, so a long leadership gap could slow spending across the sector.</p>
+        <div class="src">Sources: <a href="https://x.com/DeItaone/status/2120876799252979752">*Walter Bloomberg (X)</a><a href="https://x.com/DeItaone/status/2120876435128926676">*Walter Bloomberg (X) 2</a><a href="https://x.com/Techmeme/status/2120894723862978568">Techmeme (X)</a><a href="https://x.com/KobeissiLetter/status/2120899669341446242">The Kobeissi Letter (X)</a><a href="https://x.com/KobeissiLetter/status/2120908498804293843">The Kobeissi Letter (X) 2</a><a href="https://x.com/StockMKTNewz/status/2120912450459734270">Evan (X)</a><a href="https://x.com/DeItaone/status/2120848638142226876">*Walter Bloomberg (X) 3</a><a href="https://x.com/DeItaone/status/2120901890837766650">*Walter Bloomberg (X) 4</a><a href="https://www.techmeme.com/261112/p41#a261112p41">Techmeme</a><a href="https://x.com/Techmeme/status/2120920033232925082">Techmeme (X) 2</a><a href="https://x.com/KobeissiLetter/status/2120886129813553412">The Kobeissi Letter (X) 3</a><a href="https://www.techmeme.com/261112/p36#a261112p36">Techmeme 2</a><a href="https://x.com/StockMKTNewz/status/2120864890676191531">Evan (X) 2</a><a href="https://x.com/Techmeme/status/2120749937977934224">Techmeme (X) 3</a><a href="https://x.com/Techmeme/status/2120885951228719604">Techmeme (X) 4</a> · Axios Markets, Axios Pro Rata, Axios AI+ (newsletters)</div>
+      </article>
+<article class="item" id="mkt-fed">
+        <h3>Fed talks tougher as 10-year climbs; layoffs stay near record lows<span class="tag new">Developing · Day 3</span></h3>
+        <p>New today: Chicago Fed President Austan Goolsbee said the Fed "is failing on the inflation side" of its mandate. Axios reports that markets see a December hike as virtually certain and are pricing two more quarter-point hikes by June, after Governor Waller raised the idea of a supersized move. Cleveland's Beth Hammack still prefers going gradually. The 10-year yield is up another 10 basis points to 5.10%.</p>
+        <p>Jobless claims rose to 200,000, above the 194,000 forecast. It's still the ninth straight week at or below 200,000, a first since records began in 1967. Housing is the weak spot: October existing-home sales fell 5.5%, the lowest in 16 years, even as prices hit a record. Freddie Mac's 30-year mortgage rate dipped to 7.11%. Consumers' expectation of higher unemployment a year from now is the highest since April 2020.</p>
+        <p class="why"><strong>Why it matters:</strong> The Fed is now focused on inflation, so higher borrowing costs are likely to last longer.</p>
+        <div class="src">Sources: <a href="https://x.com/DeItaone/status/2120920476063351293">*Walter Bloomberg (X)</a><a href="https://x.com/DeItaone/status/2120913643243999256">*Walter Bloomberg (X) 2</a><a href="https://x.com/LizAnnSonders/status/2120873577540984864">Liz Ann Sonders (X)</a><a href="https://x.com/LizAnnSonders/status/2120897176150933527">Liz Ann Sonders (X) 2</a><a href="https://www.marketwatch.com/story/home-sales-plummet-to-lowest-level-since-the-great-recession-as-buyers-flee-the-market-624e6270?mod=mw_rss_topstories">MarketWatch</a><a href="https://x.com/DeItaone/status/2120925384724095048">*Walter Bloomberg (X) 3</a><a href="https://x.com/KobeissiLetter/status/2120600179560837279">The Kobeissi Letter (X)</a> · Axios Macro (newsletter)</div>
+      </article>
+<article class="item" id="mkt-anthropic">
+        <h3>Anthropic launches its IPO site; filing shows big Google ties<span class="tag new">Developing · Day 3</span></h3>
+        <p>New today: Anthropic posted its IPO page, noting it has filed a registration statement with the SEC. The Information reports that Google's roughly $33 billion investment is set to become a stake of about 10%, worth about $132 billion. The filing also commits Anthropic to spend at least $121 billion on Google Cloud through July 2033, regardless of actual usage. Axios notes the IPO is backed by a $10 billion Nvidia commitment, which makes Huang's exit awkward timing.</p>
+        <div class="src">Sources: <a href="https://x.com/AnthropicAI/status/2120841731302154708">Anthropic (X)</a><a href="https://x.com/theinformation/status/2120637749560508466">The Information (X)</a> · Axios AI+ (newsletter)</div>
+      </article>
+<article class="item" id="mkt-oil">
+        <h3>Oil rises after Trump's no-deal post<span class="tag new">Developing · Day 2</span></h3>
+        <p>New today: Brent gained about 1.6% and WTI about 0.9% after Trump said the US doesn't need an Iran deal, which reversed Wednesday evening's peace-hope slide. Supply is easing anyway: OPEC+ output rose to 41.23 million barrels a day, and Saudi production is near a four-year high once a prewar spike is set aside. GasBuddy counts 32 states under $4 a gallon. The USPS wants an 11% fuel surcharge on packages.</p>
+        <div class="src">Sources: <a href="https://news.google.com/rss/articles/CBMinwFBVV95cUxNVG5RS0lub0RlMzltTEJDNkVKUVVmdnNHcG14bGRMQ0pFeTJ1NW9ibkk4dVI5TExfNVMzclpKYTI1d3FnQXdEVldRZmJnZWxHZXlUWDZHWmJPRUxhQ2xxNVpLSDFvTFFKOFpScEZSMVI2eW1EcFlwM2YyZXBHNzctVDAxNVFpd2ZCUVZIUnAyVDdiRm5IWDBfbDNyUWdMSzg?oc=5">WSJ</a><a href="https://www.cnbc.com/2026/11/12/oil-prices-jump-after-trump-says-no-iran-deal-needed-weve-got-their-strait.html">CNBC Top News</a><a href="https://x.com/FirstSquawk/status/2120692422418301221">First Squawk (X)</a><a href="https://x.com/FirstSquawk/status/2120597690455294402">First Squawk (X) 2</a><a href="https://x.com/JavierBlas/status/2120575529342656513">Javier Blas (X)</a><a href="https://x.com/GasBuddyGuy/status/2120714675285266506">Patrick De Haan (X)</a><a href="https://www.cnbc.com/2026/11/12/usps-fuel-surcharge-package-deliveries.html">CNBC Top News 2</a></div>
+      </article>
+<article class="item" id="mkt-brief">
+        <h3>In brief<span class="tag new">New</span></h3>
+        <p>SpaceX plans more than $24 billion for a supercompute site at Starbase and a roughly $50 billion campus in Arizona. Foxconn's Q3 revenue rose 47% on AI and iPhone demand. Scout Motors has about 212,000 reservations. The Fed dropped its October 2027 meeting from next year's calendar.</p>
+        <div class="src">Sources: <a href="https://x.com/DeItaone/status/2120910425000669311">*Walter Bloomberg (X)</a><a href="https://x.com/FirstSquawk/status/2120912587076538622">First Squawk (X)</a><a href="https://x.com/Techmeme/status/2120824089187356907">Techmeme (X)</a><a href="https://www.cnbc.com/2026/11/12/scout-motors-reservations-south-carolina-plant.html">CNBC Top News</a><a href="https://x.com/DeItaone/status/2120925026203640117">*Walter Bloomberg (X) 2</a></div>
+      </article>
+    </div>
+    <h3 class="sub">Today and ahead (CT)</h3>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>When</th><th>Event</th></tr></thead>
+        <tbody>
+          <tr><td class="num">Today, 2 PM CT</td><td>WTA Finals: Gauff v Kostyuk (Noskova v Pegula 3:30 PM CT)</td></tr>
+          <tr><td class="num">Friday</td><td>UN Security Council meets on Gulf maritime security</td></tr>
+          <tr><td class="num">Monday, Nov 16, 6:45 AM CT</td><td>Grammy nominations announced</td></tr>
+          <tr><td class="num">Tuesday, Nov 17</td><td>Nvidia quarterly earnings</td></tr>
+          <tr><td class="num">Wednesday, Nov 18, 11 AM CT</td><td>Nvidia all-hands meeting with interim CEO Kress</td></tr>
+          <tr><td class="num">Next week</td><td>Trump-Xi summit in Shenzhen</td></tr>
+          <tr><td class="num">Before Thanksgiving</td><td>Jensen Huang testifies to Congress, likely in closed session</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:6px"><div class="src">Sources: <a href="https://www.espn.com/tennis/scoreboard">ESPN tennis</a><a href="https://x.com/IranIntl_En/status/2120732684486103130">Iran International English (X)</a><a href="https://x.com/XXL/status/2120928068323721328">XXL Magazine (X)</a><a href="https://x.com/StockMKTNewz/status/2120886363386253476">Evan (X)</a><a href="https://www.techmeme.com/261112/p39#a261112p39">Techmeme</a><a href="https://www.techmeme.com/261112/p41#a261112p41">Techmeme 2</a></div></div>
+  </section>
+
+  <!-- TECH -->
+  <section class="sec" id="tech">
+    <div class="sec-head"><h2>Tech</h2><span class="label">AI · Gaming</span></div>
+    <h3 class="sub" id="ai">AI</h3>
+    <div class="items">
+<article class="item" id="ai-chips">
+        <h3>Huang fallout: Lutnick stalled chip curbs; China rushes for Nvidia capacity<span class="tag new">Developing · Day 2</span></h3>
+        <p>New today: Axios reports Trump has approved a crackdown on companies suspected of diverting Nvidia chips to China three times this year, in May, August and Nov 5. Each time, Commerce Secretary Howard Lutnick stalled it, warning it "will start a trade war." Commerce denies there was a confrontation. The Information says Commerce is now finalizing a rule to block remote access and smuggling through data centers. Senate Finance and House tax committees are opening a probe into the administration's approvals of Nvidia exports to China.</p>
+        <p>Reuters reports Chinese AI firms are rushing to rent Nvidia capacity overseas before any new curbs. The Information reports that firms tied to Alice Huang invested in DeepSeek's $15.8 billion round, pitched as suppliers of banned Blackwell chips. Bloomberg says Alice Huang is now living in Beijing. Beijing told the US to stop "fabricating" a spy narrative.</p>
+        <p class="why"><strong>Why it matters:</strong> The scandal is likely to bring tighter export rules and a Democratic-led investigation in the new Congress.</p>
+        <div class="src">Sources: <a href="https://x.com/axios/status/2120623772612911161">Axios (X)</a><a href="https://x.com/Techmeme/status/2120719732026614203">Techmeme (X)</a><a href="https://x.com/FirstSquawk/status/2120921360251883888">First Squawk (X)</a><a href="https://x.com/Reuters/status/2120756000860823865">Reuters (X)</a><a href="https://x.com/Techmeme/status/2120760016043122746">Techmeme (X) 2</a><a href="https://x.com/theinformation/status/2120905764604649753">The Information (X)</a><a href="https://x.com/Techmeme/status/2120903388372341045">Techmeme (X) 3</a><a href="https://x.com/Techmeme/status/2120694654085841101">Techmeme (X) 4</a><a href="https://x.com/Techmeme/status/2120846753700479034">Techmeme (X) 5</a> · Axios AI+, Axios AM / PM / Finish Line (newsletters)</div>
+      </article>
+<article class="item" id="ai-models">
+        <h3>AlphaGenome 2, Gemini Decisions API, open-weight Runway robotics model<span class="tag new">New</span></h3>
+        <p>Google DeepMind's AlphaGenome 2 predicts how DNA variants affect specific cell types. It finds twice as many variants as the first version and is free for non-commercial use. Google also launched the Gemini Decisions API, which returns preset answers with confidence scores for $0.10 per million input tokens. Runway released Praxis-1, a 27-billion-parameter open-weight robotics model under Apache 2.0 that tops Nvidia's RoboLab-120 leaderboard. xAI shipped Grok Bot 1.0 with shareable team bots in Slack, Teams and meetings.</p>
+        <div class="src">Sources: <a href="https://x.com/GoogleDeepMind/status/2120841923237683462">Google DeepMind (X)</a><a href="https://x.com/Techmeme/status/2120593919251775861">Techmeme (X)</a> · TLDR AI (newsletter)</div>
+      </article>
+<article class="item" id="ai-money">
+        <h3>OpenAI API sales jump; LangChain, Agile Robots and UForce raise big rounds<span class="tag new">New</span></h3>
+        <p>The Information reports that GPT 5.6, Astra and new image models drove a jump in OpenAI's API sales last quarter. LangChain raised $300 million at a $3 billion valuation, up from $1.25 billion, led by Alphabet's CapitalG. SoftBank led a $500 million round in Munich's Agile Robots at $8.5 billion. UForce, which makes uncrewed vehicles, raised $700 million at $6 billion. British chip startup Fractile raised £540 million, and Norwest closed a $4 billion fund.</p>
+        <div class="src">Sources: <a href="https://x.com/theinformation/status/2120645264885039600">The Information (X)</a><a href="https://x.com/Techmeme/status/2120901049829699862">Techmeme (X)</a><a href="https://x.com/Techmeme/status/2120776350311370990">Techmeme (X) 2</a><a href="https://x.com/Techmeme/status/2120830401656869060">Techmeme (X) 3</a><a href="https://techcrunch.com/2026/11/12/norwest-pushes-deeper-into-ai-with-new-4b-fund/">TechCrunch (AI)</a> · Axios Pro Rata (newsletter)</div>
+      </article>
+<article class="item" id="ai-brief">
+        <h3>In brief<span class="tag new">New</span></h3>
+        <p>Hackers who breached Fireworks AI got access to Notion customers' chat transcripts, Fireworks' second breach in two months. Young victims of sexualized Grok images are pursuing legal claims against xAI. United Airlines will block personal AI agents from booking tickets. Russian pranksters fooled three OpenAI national security and policy staff into a video call. AWS released an emulator that it says AI agents wrote without human code review. Tencent's Pony Ma says he'd move half of Tencent's 100,000 staff to AI-native businesses. Google and Samsung's Gemini smartglasses start at $395.</p>
+        <div class="src">Sources: <a href="https://techcrunch.com/2026/11/12/cyberattack-on-fireworks-ai-allowed-hackers-to-access-notion-customers-chat-transcripts/">TechCrunch (AI)</a><a href="https://x.com/Techmeme/status/2120781490992947682">Techmeme (X)</a><a href="https://x.com/Techmeme/status/2120587618136297786">Techmeme (X) 2</a><a href="https://x.com/Techmeme/status/2120843126084661304">Techmeme (X) 3</a><a href="https://x.com/Techmeme/status/2120614166633574682">Techmeme (X) 4</a><a href="https://x.com/Techmeme/status/2120827892791918628">Techmeme (X) 5</a><a href="https://arstechnica.com/google/2026/11/google-pushes-privacy-angle-as-gemini-powered-smartglasses-debut-starting-at-395/">Ars Technica</a></div>
+      </article>
+    </div>
+    <h3 class="sub" id="gaming">Gaming</h3>
+    <div class="items">
+<article class="item" id="game-gdc">
+        <h3>GDC survey: 40% of developers use gen AI; one in three laid off<span class="tag new">New</span></h3>
+        <p>GDC's State of the Game Industry report, based on more than 2,600 professionals, finds 40% of developers now use generative AI at work, up from last year. One in three were laid off in the past two years, more than half of those are still unemployed, and a quarter have applied to at least 100 jobs. GDC says it isn't overly worried about the 30% attendance drop at this year's show.</p>
+        <p class="why"><strong>Why it matters:</strong> The layoffs haven't stopped, and AI use keeps spreading in the industry.</p>
+        <div class="src">Sources: <a href="https://www.videogameschronicle.com/news/one-in-three-games-industry-professionals-surveyed-by-gdc-were-laid-off-in-the-past-two-years-more-than-in-its-last-report/">VGC</a><a href="https://www.gamesindustry.biz/gdc-state-of-the-game-industry-report-40-of-developers-are-using-generative-ai-for-work">GamesIndustry.biz</a><a href="https://www.gamedeveloper.com/business/layoffs-ai-and-next-gen-what-2-600-game-professionals-told-gdc-this-year">Game Developer</a><a href="https://www.gamesindustry.biz/gdcs-mark-deloura-addresses-the-events-dip-in-attendance-in-2026-as-he-details-the-planned-changes-for-2027">GamesIndustry.biz 2</a><a href="https://www.theverge.com/games/1032085/gdc-festival-of-gaming-annual-survey-ai-layoffs">The Verge (AI)</a></div>
+      </article>
+<article class="item" id="game-awards">
+        <h3><i>Resident Evil Requiem</i> sweeps Golden Joysticks; Game Awards come to Disney+<span class="tag new">New</span></h3>
+        <p><i>Resident Evil Requiem</i> won four Golden Joystick Awards, including Ultimate and Console Game of the Year. Geoff Keighley says The Game Awards will stream live on Disney+ worldwide on Dec 10, alongside the usual platforms.</p>
+        <div class="src">Sources: <a href="https://x.com/Wario64/status/2120610078688784434">Wario64 (X)</a><a href="https://www.gamesindustry.biz/resident-evil-requiem-wins-four-golden-joystick-awards-including-ultimate-and-console-goty">GamesIndustry.biz</a><a href="https://x.com/geoffkeighley/status/2120924585872732528">Geoff Keighley (X)</a></div>
+      </article>
+<article class="item" id="game-sales">
+        <h3>Nintendo Black Friday: Switch 2 Mario Kart bundle $499.99<span class="tag new">New</span></h3>
+        <p>Nintendo's Black Friday deals take $50 off the Switch 2 plus <i>Mario Kart World</i> bundle, bringing it to $499.99, and $20 off select games including <i>Donkey Kong Bananza</i>. The sale starts at the end of November.</p>
+        <div class="src">Sources: <a href="https://x.com/Wario64/status/2120883576325771390">Wario64 (X)</a><a href="https://www.ign.com/articles/nintendo-black-friday-sale-will-include-switch-2-games-like-donkey-kong-bananza">IGN</a><a href="https://www.videogameschronicle.com/news/nintendos-black-friday-deals-include-switch-2-and-mario-kart-world-bundle/">VGC</a></div>
+      </article>
+<article class="item" id="game-brief">
+        <h3>In brief<span class="tag new">New</span></h3>
+        <p>Black Forest Games bought itself out from THQ Nordic and formed a new studio group, Third Signal. Jason Schreier reports Skydance told staff <i>Marvel 1943</i> is not canceled. Neil Druckmann says <i>Intergalactic</i> is in its last stage of production, with a full reveal next year. Indie developers are delaying launches because of Steam's growing approval backlog. An apparent <i>GTA 6</i> map surfaced at a Selfridges merch drop<span class="tag unconf">Unconfirmed</span>, and Pocketpair is giving staff five days off to play the game. Dark Souls 2 and 3 servers are back after a two-week outage.</p>
+        <div class="src">Sources: <a href="https://x.com/VGC_News/status/2120822210973606306">VGC (X)</a><a href="https://x.com/jasonschreier/status/2120635950875164779">Jason Schreier (X)</a><a href="https://www.videogameschronicle.com/news/intergalactic-is-in-the-last-stage-of-production-where-its-playable-and-being-refined-neil-druckmann-says/">VGC</a><a href="https://www.eurogamer.net/steam-game-submission-review-backlog-ai-slop-approval-delays">Eurogamer</a><a href="https://www.videogameschronicle.com/news/gta-6-map-seemingly-leaks-at-selfridges-merch-drop/">VGC 2</a><a href="https://www.ign.com/articles/pocketpair-gives-employees-five-days-leave-to-play-gta-6">IGN</a><a href="https://www.eurogamer.net/dark-souls-2-3-servers-back-online">Eurogamer 2</a></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- SPORTS -->
+  <section class="sec" id="sports">
+    <div class="sec-head"><h2>Sports</h2><span class="label">NBA · NFL · WNBA · Tennis</span></div>
+    <h3 class="sub" id="nba">NBA</h3>
+    
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Wednesday</th><th>Score</th></tr></thead>
+        <tbody>
+          <tr><td>Wizards – <span class="win">Pacers</span></td><td class="num">101 – <span class="win">114</span></td></tr>
+          <tr><td><span class="win">Cavaliers</span> – Knicks</td><td class="num"><span class="win">115</span> – 107</td></tr>
+          <tr><td><span class="win">Celtics</span> – Raptors</td><td class="num"><span class="win">98</span> – 93</td></tr>
+          <tr><td><span class="win">Spurs</span> – Bulls</td><td class="num"><span class="win">124</span> – 119</td></tr>
+          <tr><td><span class="win">Nuggets</span> – Grizzlies</td><td class="num"><span class="win">123</span> – 118</td></tr>
+          <tr><td><span class="win">Lakers</span> – Bucks</td><td class="num"><span class="win">123</span> – 112</td></tr>
+          <tr><td><span class="win">Nets</span> – Pelicans</td><td class="num"><span class="win">145</span> – 111</td></tr>
+          <tr><td><span class="win">Magic</span> – Jazz</td><td class="num"><span class="win">123</span> – 108</td></tr>
+          <tr><td>Warriors – <span class="win">Rockets</span></td><td class="num">108 – <span class="win">115</span></td></tr>
+          <tr><td>Thunder – <span class="win">Trail Blazers</span></td><td class="num">108 – <span class="win">118</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="src" style="margin-top:6px">Scores: <a href="https://www.espn.com/nba/scoreboard">ESPN</a></div>
+    <div class="items">
+<article class="item" id="nba-curry">
+        <h3>Curry has an oblique tear; Markkanen out a month<span class="tag new">New</span></h3>
+        <p>Stephen Curry left Wednesday's 115-108 loss to Houston in the first quarter. He has an oblique abdominal tear and will be re-evaluated in two weeks. Steve Kerr said "concern is high," and Curry called it an injury he'd never had before. Utah's Lauri Markkanen has a non-displaced right-hand fracture and will miss at least a month. Austin Reaves (heel) and Caleb Wilson (hand) also left their games.</p>
+        <p class="why"><strong>Why it matters:</strong> Golden State loses its best player for at least two weeks.</p>
+        <div class="src">Sources: <a href="https://x.com/ShamsCharania/status/2120923895184359440">Shams Charania (X)</a><a href="https://x.com/ChrisBHaynes/status/2120924000562085908">Chris Haynes (X)</a><a href="https://sports.yahoo.com/nba/breaking-news/article/warriors-stephen-curry-out-at-least-2-weeks-after-suffering-oblique-abdominal-tear-170546843.html">Yahoo Sports NBA</a><a href="https://x.com/TheSteinLine/status/2120750693577289731">Marc Stein (X)</a><a href="https://x.com/ShamsCharania/status/2120581713390608865">Shams Charania (X) 2</a><a href="https://x.com/TheSteinLine/status/2120719353867878518">Marc Stein (X) 2</a></div>
+      </article>
+<article class="item" id="nba-night">
+        <h3>Spurs win 10th straight in Chicago; Cavs end Knicks' run<span class="tag new">New</span></h3>
+        <p>San Antonio came back to beat the Bulls 124-119 for its 10th straight win. Cleveland beat New York 115-107, ending the Knicks' four-game winning streak. Portland beat Oklahoma City 118-108, and Brooklyn routed New Orleans 145-111, after which Zion Williamson told teammates to "go look yourself in the mirror." Boston finished a 4-0 road trip at Toronto.</p>
+        <p>Off the court: Sacramento signed Mason Plumlee and has an offer out to Gabe Vincent, and Rob Dillingham is heading to the G League. Tonight: Raptors at 76ers and Pistons at Wizards at 6 PM CT, Mavericks at Timberwolves at 7, and Hornets at Suns at 8.</p>
+        <div class="src">Sources: <a href="https://www.espn.com/nba/game/_/gameId/401909969/spurs-bulls">ESPN (Spurs – Bulls)</a><a href="https://sports.yahoo.com/articles/highlights-san-antonio-completes-comeback-130000328.html">Yahoo Sports NBA</a><a href="https://www.espn.com/nba/game/_/gameId/401909967/cavaliers-knicks">ESPN (Cavaliers – Knicks)</a><a href="https://sports.yahoo.com/articles/cavaliers-115-knicks-107-credit-123000657.html">Yahoo Sports NBA 2</a><a href="https://www.espn.com/nba/game/_/gameId/401909975/thunder-trail-blazers">ESPN (Thunder – Trail Blazers)</a><a href="https://www.espn.com/nba/game/_/gameId/401909972/nets-pelicans">ESPN (Nets – Pelicans)</a><a href="https://sports.yahoo.com/nba/article/zion-williamson-tears-into-pelicans-after-unacceptable-loss-to-nets-go-look-yourself-in-the-mirror-135005487.html">Yahoo Sports NBA 3</a><a href="https://sports.yahoo.com/articles/10-takeaways-chaotic-celtics-win-120000230.html">Yahoo Sports NBA 4</a><a href="https://x.com/ShamsCharania/status/2120682856884388286">Shams Charania (X)</a><a href="https://x.com/TheSteinLine/status/2120917115314352406">Marc Stein (X)</a><a href="https://x.com/JakeLFischer/status/2120667424211267814">Jake Fischer (X)</a><a href="https://www.espn.com/nba/game/_/gameId/401909976/raptors-76ers">ESPN (Raptors – 76ers)</a><a href="https://www.espn.com/nba/game/_/gameId/401909977/pistons-wizards">ESPN (Pistons – Wizards)</a><a href="https://www.espn.com/nba/game/_/gameId/401909978/mavericks-timberwolves">ESPN (Mavericks – Timberwolves)</a><a href="https://www.espn.com/nba/game/_/gameId/401909979/hornets-suns">ESPN (Hornets – Suns)</a></div>
+      </article>
+    </div>
+    <h3 class="sub" id="nfl">NFL</h3>
+    
+    <div class="items">
+<article class="item" id="nfl-tnf">
+        <h3>Commanders at Giants tonight; three rookie QBs set to start Sunday<span class="tag new">New</span></h3>
+        <p>Washington visits the Giants at 7:15 PM CT. JJ McCarthy (hip) and Cam Skattebo (hamstring) have no injury designation and will play. Sunday brings first starts for rookies Carson Beck (Arizona vs. the Rams), No. 1 pick Fernando Mendoza (Raiders vs. Seattle) and Kyle McCord (Miami vs. Indy). Cleveland goes back to Deshaun Watson. Get-in prices for Raiders-Seahawks jumped from $282 to $364 after the Mendoza news.</p>
+        <p class="why"><strong>Why it matters:</strong> Sunday's rookie QB debuts could shape several teams' plans at quarterback.</p>
+        <div class="src">Sources: <a href="https://www.espn.com/nfl/game/_/gameId/401873052/commanders-giants">ESPN (Commanders – Giants)</a><a href="https://x.com/AdamSchefter/status/2120624858862363016">Adam Schefter (X)</a><a href="https://x.com/AdamSchefter/status/2120616034063237614">Adam Schefter (X) 2</a><a href="https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/fernando-mendoza-starting-is-a-new-step-but-its-not-a-whirlwind">Pro Football Talk</a><a href="https://x.com/FieldYates/status/2120597618397241723">Field Yates (X)</a><a href="https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/dolphins-qb-kyle-mccord-experience-in-big-games-something-i-can-draw-from">Pro Football Talk 2</a><a href="https://x.com/RapSheet/status/2120888336881758698">Ian Rapoport (X)</a></div>
+      </article>
+<article class="item" id="nfl-injuries">
+        <h3>Packers without Jacobs vs. Vikings; Nacua out a 'significant period'<span class="tag new">New</span></h3>
+        <p>Green Bay's Josh Jacobs will have surgery on a broken finger and is out against Minnesota, but could be back in two to three weeks. Kevin O'Connell won't yet commit to Kirk Cousins starting that game. Puka Nacua won't go on IR but will miss significant time, and Sean McVay says Davante Adams could return after Week 12. Patrick Mahomes practiced fully ahead of Atlanta, and the Patriots ruled out TreVeyon Henderson for Munich.</p>
+        <div class="src">Sources: <a href="https://x.com/RapSheet/status/2120576036958060601">Ian Rapoport (X)</a><a href="https://x.com/MikeGarafolo/status/2120598740029301126">Mike Garafolo (X)</a><a href="https://x.com/AdamSchefter/status/2120621139525263707">Adam Schefter (X)</a><a href="https://x.com/AdamSchefter/status/2120826390971118032">Adam Schefter (X) 2</a><a href="https://x.com/AdamSchefter/status/2120630383989637492">Adam Schefter (X) 3</a><a href="https://x.com/AdamSchefter/status/2120648072929615904">Adam Schefter (X) 4</a></div>
+      </article>
+<article class="item" id="nfl-brief">
+        <h3>In brief<span class="tag new">New</span></h3>
+        <p>Denver called off its trade for Chargers LB Daiyan Henley after he failed a physical with a knee issue. Baltimore signed kicker Riley Patterson for Monday and added Harrison Mevis to the practice squad. Bills-Vikings drew 21.7 million viewers, the best Week 9 Monday night audience of the ESPN era. Longtime Steelers player and coach Dick Hoak died at 86.</p>
+        <div class="src">Sources: <a href="https://x.com/AdamSchefter/status/2120797270341730587">Adam Schefter (X)</a><a href="https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/source-daiyan-henley-failed-broncos-physical">Pro Football Talk</a><a href="https://x.com/MikeGarafolo/status/2120655763773264142">Mike Garafolo (X)</a><a href="https://x.com/RapSheet/status/2120879594198995133">Ian Rapoport (X)</a><a href="https://x.com/AdamSchefter/status/2120658441681227807">Adam Schefter (X) 2</a><a href="https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/longtime-steelers-player-coach-dick-hoak-dies-at-86">Pro Football Talk 2</a></div>
+      </article>
+    </div>
+    <h3 class="sub" id="wnba">WNBA &amp; Unrivaled</h3>
+    
+    <p class="src" style="font-size:.85rem">Off-season. Kate Martin has signed with the Bendigo Spirit in Australia [L620].</p>
+    <h3 class="sub" id="tennis">Tennis</h3>
+    
+    <p class="src" style="font-size:.85rem">WTA Finals: Mirra Andreeva beat Sabalenka 6-4, 6-0 to win her group and move to No. 2 in the live rankings. Gauff plays Kostyuk at 2 PM CT today and Noskova plays Pegula at 3:30. The ATP Finals draw puts Zverev with Shelton and Alcaraz with Medvedev [L541, L539, L656, L622].</p>
+  </section>
+
+  <!-- MUSIC -->
+  <section class="sec" id="music">
+    <div class="sec-head"><h2>Music</h2><span class="label">Hip-hop · R&amp;B · Culture</span></div>
+    <div class="items">
+<article class="item" id="music-beezy">
+        <h3>Yella Beezy guilty of capital murder in MO3 killing, sentenced to life<span class="tag new">New</span></h3>
+        <p>After a 12-day trial, a Dallas jury found Yella Beezy guilty of paying Kewon White to kill rival rapper MO3 on a Dallas highway in 2020. He was sentenced to life in prison. Prosecutors used his lyrics during the trial.</p>
+        <p class="why"><strong>Why it matters:</strong> It's another major case where rap lyrics were used as evidence in court.</p>
+        <div class="src">Sources: <a href="https://x.com/XXL/status/2120637795106427226">XXL Magazine (X)</a><a href="https://news.google.com/rss/articles/CBMioAFBVV95cUxQSzR0Mk9WZEZjNG1YakRaVHE1NUhiazZfRUhYMTVJTmR3ckZGRzhSNlNkanNoZEpKSy1STGxvaUdaMVJremhtMVVUV0JIMzNiV3ZSdGg1emtGZUVrQ01PVlliMlVXaXpQeFR0ejJ6OHc5UElsYklEbndZYjlPcTZBanNXc1FTN3hTaU5FTlVZS3BVM1NOd1dGRjRiZFVnRmdX?oc=5">Billboard</a><a href="https://www.xxlmag.com/yella-beezy-guilty-captial-murder-mo3-killing/">XXL</a><a href="https://www.xxlmag.com/yella-beezy-trial-closing-arguments/">XXL 2</a></div>
+      </article>
+<article class="item" id="music-releases">
+        <h3>Friday: Offset's <i>GMFU</i> and Tay-K's <i>Monsters Under My Bed</i><span class="tag new">New</span></h3>
+        <p>Offset's new album <i>GMFU</i> arrives Friday with features from Quavo, Gunna, Loe Shimmy, OsamaSon, ApolloRed1 and Tommy Richman. Tay-K's album <i>Monsters Under My Bed</i> also drops Friday. He says he still loves "The Race" even though it was used against him in court. IDK and Eminem have "Welcome," produced by J Dilla, coming soon.</p>
+        <p class="why"><strong>Why it matters:</strong> Two notable rap albums land on the same Friday.</p>
+        <div class="src">Sources: <a href="https://x.com/HotNewHipHop/status/2120604880134193195">HotNewHipHop (X)</a><a href="https://x.com/XXL/status/2120618818556821974">XXL Magazine (X)</a><a href="https://x.com/Kurrco/status/2120609742879949112">Kurrco (X)</a><a href="https://x.com/Kurrco/status/2120717779976306705">Kurrco (X) 2</a><a href="https://x.com/Kurrco/status/2120660340124029400">Kurrco (X) 3</a><a href="https://x.com/HipHopAllDay/status/2120665208087801995">Hip Hop All Day (X)</a></div>
+      </article>
+<article class="item" id="music-tupac">
+        <h3>Angie Martinez's unaired Tupac interview becomes Netflix series Nov 27<span class="tag new">New</span></h3>
+        <p>Angie Martinez will host <i>The Tupac Tapes</i>, a four-part Netflix podcast built on her unreleased interview with Tupac from 30 years ago. It premieres Nov 27. Separately, Nevada's Supreme Court accepted Keffe D's appeal in the Tupac murder case.</p>
+        <div class="src">Sources: <a href="https://www.vibe.com/news/movies-tv/lost-tupac-shakur-interview-netflix-1235202735/">VIBE</a><a href="https://www.xxlmag.com/tupac-shakur-angie-martinez-netflix-tupac-tapes/">XXL</a><a href="https://www.xxlmag.com/keffe-d-tupac-shakur-murder-appeal-nevada-supreme-court/">XXL 2</a></div>
+      </article>
+<article class="item" id="music-brief">
+        <h3>In brief<span class="tag new">New</span></h3>
+        <p>BigXthaPlug scored his first No. 1 rap album with <i>Better Over Time</i>. "Ya Hit" is now the highest-charting rap song on US Spotify. Lil Baby's <i>FRESH</i> is projected to be his fifth No. 1<span class="tag unconf">Unconfirmed</span>, though the Joe Budden crew panned it. Chris Brown called Usher his "brother" on stage in Atlanta, and Latto joined them. Young Thug and Birdman were dropped from the Lil Wayne bus-shooting lawsuit. Grammy nominations come Monday at 6:45 AM CT. Joyce Wrice (Feb 23) and Danielle Ponder (Feb 27, Dallas) announced 2027 tours.</p>
+        <div class="src">Sources: <a href="https://x.com/billboardcharts/status/2120584882829086828">billboard charts (X)</a><a href="https://x.com/Kurrco/status/2120645265908441334">Kurrco (X)</a><a href="https://x.com/HipHopAllDay/status/2120702603315347639">Hip Hop All Day (X)</a><a href="https://x.com/HotNewHipHop/status/2120609416382657024">HotNewHipHop (X)</a><a href="https://x.com/HotNewHipHop/status/2120623396128174508">HotNewHipHop (X) 2</a><a href="https://x.com/XXL/status/2120649017897939203">XXL Magazine (X)</a><a href="https://x.com/XXL/status/2120660714511606131">XXL Magazine (X) 2</a><a href="https://x.com/XXL/status/2120928068323721328">XXL Magazine (X) 3</a><a href="https://ratedrnb.com/2026/11/joyce-wrice-machiko-tour-dates/">Rated R&amp;B</a><a href="https://ratedrnb.com/2026/11/danielle-ponder-everything-has-changed-tour-dates/">Rated R&amp;B 2</a></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- MADRID CORNER -->
+  <section class="sec" id="madrid">
+    <div class="sec-head"><h2>Madrid Corner</h2><span class="label">Rotates daily · 10 of 20</span></div>
+    <div class="madrid">
+      <div class="phrase">
+        <div class="label">Frase del día</div>
+        <div class="es">No pasa nada</div>
+        <div class="say">noh PAH-sah NAH-dah</div>
+        <div class="en">No worries / It&#39;s fine</div>
+        <p class="note">Spaniards use it all day to mean "no worries" or "it's fine." Say it when someone bumps you, apologizes for being late or spills a little of your caña.</p>
+      </div>
+      <div class="place">
+        <figure>
+          <img src="img/madrid-today.jpg?v=202611121140" alt="A narrow Madrid street corner with old multi-story buildings, balconies and shopfronts where Calle de Quevedo and Calle de Cervantes meet." width="1280" height="850">
+          <figcaption>Calle de Quevedo (left) and Calle de Cervantes (right) in the Barrio de las Letras.. Photo: <a href="https://commons.wikimedia.org/wiki/File:Barrio_de_las_Letras_(Madrid)_01.jpg">Jorge Láscar</a>, CC BY-SA 2.0, via Wikimedia Commons</figcaption>
+        </figure>
+        <span class="label">Lugar del día</span>
+        <h3>Barrio de las Letras</h3>
+        <p>Barrio de las Letras is the old literary quarter between Sol and the Paseo del Prado, where Cervantes, Lope de Vega and Quevedo lived. Lines from their work are set in gold letters into the pavement, and Calle Huertas is full of old bars. The one indoor stop is the Casa Museo Lope de Vega, the playwright's 17th-century house, which you can see on a short free guided visit.</p>
+        <dl class="facts">
+          <dt>Hours</dt><dd>The streets are open all the time. Casa Museo Lope de Vega is open Tue–Sun 10 AM–6 PM (last visit 5 PM) and closed Mondays, so it's open today. Hours can change for special events.</dd>
+          <dt>Entry</dt><dd>Free. The house is guided-tour only (about 35 minutes, tours in English available) and you must book ahead by phone or email.</dd>
+          <dt>Metro</dt><dd>Antón Martín (L1) on the south edge or Sevilla (L2) on the north. Sol is a short walk.</dd>
+          <dt>Tip</dt><dd>Thunderstorms today with an 83% chance of rain and gusts to 52 km/h. Do the Lope de Vega house and a bar today and leave the street wandering for Friday, which looks drier.</dd>
+        </dl>
+        <div class="src">Sources: <a href="https://www.comunidad.madrid/centros/casa-museo-lope-vega">Comunidad de Madrid: Casa Museo Lope de Vega</a><a href="https://www.esmadrid.com/informacion-turistica/barrio-de-las-letras">esMadrid: Barrio de las Letras</a><a href="https://open-meteo.com/">Open-Meteo</a></div>
+      </div>
+    </div>
+    <h3 class="sub" id="madrid-news">Madrid en breve · Madrid in brief</h3>
+    <ul class="mbrief">
+      <li><b>Flood pre-emergency; Manzanares on red alert in Rivas</b> The Madrid region activated the pre-emergency phase of its flood plan, and the Manzanares hit 4.30 meters in Rivas-Vaciamadrid, above the alert threshold. The Jarama is on yellow alert.<span class="src"><a href="https://x.com/telemadrid/status/2120587883916783623">Telemadrid (X)</a><a href="https://x.com/telemadrid/status/2120811257020248518">Telemadrid (X) 2</a><a href="https://www.telemadrid.es/noticias/madrid/aviso-rojo-riesgo-desbordamiento-rio-manzanares-rivas_1_2809394.html">Telemadrid</a></span></li>
+      <li><b>Strike aftermath: Interior bans tear gas at protests</b> After clashes during Wednesday's general strike, Interior Minister Marlaska ordered a probe into police conduct and banned tear gas at demonstrations, while coalition partners call for his resignation. Metro ran 92% of its trains during the strike, with ridership down 36%.<span class="src"><a href="https://x.com/telemadrid/status/2120805852021944761">Telemadrid (X)</a><a href="https://news.google.com/rss/articles/CBMiygFBVV95cUxPMDFQQkVFMktTdVZmX1JacFlLM1RzMXIyNjdiQ2ljbHpXcmRIMlBlXzB6YnNOTmxBNmpwdG9hNlYtT0ZpRjVWNmR3T0w5RGpVRW1BakQ3VVJDckYxNnFvUzFCYVg2Y1JxSlYwWTcwV3Nvc1NMNWdDajhBVlZtRUNkVEhqX18wZ19GZmdKWk03U0JiNl80eTBZSEdvNHJDdUdTZm5zejM2MWVtTFVCaFozRTlqcW1TcGR3WW1jWlBQUWc1Ri11TWs5OF9n0gHeAUFVX3lxTFBrX3R1Q2tvUW5qMXpRM0lkdFpPS0I1UFp4VjZwWDdhV3EtVXZVSVdTOVkyaUp1X24tbi05WHZEenhJaEZZTTlDYmVVOC1KaEh1Zm1tMEZCdjl1bFBvUlMzSTRRamhVUXhUcEIwQ0pFd19YYTlDTjhxXzY4UG9TQmlPVEwxYkc2LTBFSU5zdWJBaGxMcVlVUlNjbTBIVnBGbndmbGVET1hRR2Y3Z0dSM05WY2Fjc1h6X09mdmcxVEZKTEdqNnhuUVFkb1ZIWjUyWlVtdDJGU0lYZ25sU19PZw?oc=5">EL PAÍS</a><a href="https://www.telemadrid.es/elecciones/generales/2026/gobierno-socios-califican-exito-huelga_1_2810568.html">Telemadrid</a><a href="https://x.com/metro_madrid/status/2120605624883114079">Metro de Madrid (X)</a></span></li>
+      <li><b>Transport: L6 hiccup, bus diversions near Jacinto Benavente</b> Metro Line 6 was briefly suspended overnight between Méndez Álvaro and Conde de Casal before service came back. From Thursday, EMT buses 002, 6, M1 and M3 are diverted, and routes 26, 32 and 65 have temporary new terminals, because of works around Plaza de Jacinto Benavente.<span class="src"><a href="https://x.com/metro_madrid/status/2120785984069697898">Metro de Madrid (X)</a><a href="https://x.com/metro_madrid/status/2120792043031298318">Metro de Madrid (X) 2</a><a href="https://x.com/EMTmadrid/status/2120579865732661275">EMT Madrid (X)</a></span></li>
+      <li><b>Real Madrid basketball hosts Crvena Zvezda tonight</b> The EuroLeague game tips off at 9 PM Madrid time (2 PM CT) at the Palacio de los Deportes. EMT lines 2, 15, 21 and others serve the arena.<span class="src"><a href="https://x.com/EMTmadrid/status/2120929672951148840">EMT Madrid (X)</a></span></li>
+      <li><b>Election poll puts PSOE first for Nov 29</b> The CIS survey gives PSOE 33.3% and 134 to 143 seats, and says a PP-Vox pact would fall short of a majority.<span class="src"><a href="https://www.europapress.es/nacional/noticia-cis-da-victoria-psoe-33-niega-mayoria-pacto-psoe-vox-20261112171530.html">Europa Press Madrid</a></span></li>
+      <li><b>Weather: storms today, cloudy Friday</b> Thursday brings thunderstorms, 12–16°C, an 83% chance of rain and gusts to 52 km/h. Friday is overcast at 12–16°C with a 28% chance of rain.<span class="src"><a href="https://open-meteo.com/">Open-Meteo</a></span></li>
+    </ul>
+  </section>
+
+  <!-- STORY LOG + ARCHIVE (collapsed) -->
+  <section class="log-sec" id="log">
+    <details>
+      <summary>Story log · 36 stories</summary>
+      <div class="inner">
+        <p class="note">The next run uses this as a watchlist only. A story runs again only if new reporting inside its own window shows a new development.</p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Story</th><th>Section</th><th>Rank</th><th>Days</th><th>Sources</th></tr></thead>
+            <tbody>
+          <tr><td>Madrid corner: Barrio de las Letras / &#34;No pasa nada&#34;</td><td>Madrid</td><td class="num">–</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>Madrid in brief: Flood pre-emergency; Manzanares on red alert in Rivas; Strike aftermath: Interior bans tear gas at protests; Transport: L6 hiccup, bus diversions near Jacinto Benavente; Real Madrid basketball hosts Crvena Zvezda tonight; Election poll puts PSOE first for Nov 29; Weather: storms today, cloudy Friday</td><td>Madrid</td><td class="num">–</td><td class="num">1</td><td class="num">13</td></tr>
+          <tr><td>Trump: &#39;We don&#39;t need a deal with Iran,&#39; pulls Vance off talks</td><td>Iran</td><td class="num">1</td><td class="num">7</td><td class="num">15</td></tr>
+          <tr><td>Iran says four tankers hit by explosions; UAE-area tanker struck by projectile</td><td>Iran</td><td class="num">2</td><td class="num">6</td><td class="num">11</td></tr>
+          <tr><td>Netanyahu orders preparations for possible major strike; Eisenkot objects</td><td>Iran</td><td class="num">3</td><td class="num">1</td><td class="num">5</td></tr>
+          <tr><td>UK convicts two men of spying on Iran International journalists; France adds sanctions</td><td>Iran</td><td class="num">4</td><td class="num">2</td><td class="num">6</td></tr>
+          <tr><td>Freight rates fall fast; US gasoline drops; Europe&#39;s gas stocks under pressure</td><td>Iran</td><td class="num">5</td><td class="num">2</td><td class="num">9</td></tr>
+          <tr><td>In brief</td><td>Iran</td><td class="num">6</td><td class="num">1</td><td class="num">7</td></tr>
+          <tr><td>Scott Colom wins Mississippi Senate seat; Democrats reach 55-44</td><td>News</td><td class="num">1</td><td class="num">1</td><td class="num">5</td></tr>
+          <tr><td>Witkoff and Kushner meet Putin, then head to Dublin for Zelensky</td><td>News</td><td class="num">2</td><td class="num">4</td><td class="num">4</td></tr>
+          <tr><td>Tomb guard rebukes Hegseth&#39;s group; Pentagon backs the soldier</td><td>News</td><td class="num">3</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>DC gym shooting: one dead, four hurt, suspect dead</td><td>News</td><td class="num">4</td><td class="num">1</td><td class="num">4</td></tr>
+          <tr><td>Xi says Taiwan &#39;reunification will be realised,&#39; doesn&#39;t mention force</td><td>News</td><td class="num">5</td><td class="num">1</td><td class="num">4</td></tr>
+          <tr><td>In brief</td><td>News</td><td class="num">6</td><td class="num">1</td><td class="num">11</td></tr>
+          <tr><td>Huang out at Nvidia; shares crash at the open, then recover half</td><td>Markets</td><td class="num">1</td><td class="num">5</td><td class="num">18</td></tr>
+          <tr><td>Fed talks tougher as 10-year climbs; layoffs stay near record lows</td><td>Markets</td><td class="num">2</td><td class="num">3</td><td class="num">8</td></tr>
+          <tr><td>Anthropic launches its IPO site; filing shows big Google ties</td><td>Markets</td><td class="num">3</td><td class="num">3</td><td class="num">3</td></tr>
+          <tr><td>Oil rises after Trump&#39;s no-deal post</td><td>Markets</td><td class="num">4</td><td class="num">2</td><td class="num">7</td></tr>
+          <tr><td>In brief</td><td>Markets</td><td class="num">5</td><td class="num">1</td><td class="num">5</td></tr>
+          <tr><td>Huang fallout: Lutnick stalled chip curbs; China rushes for Nvidia capacity</td><td>Tech AI</td><td class="num">1</td><td class="num">2</td><td class="num">11</td></tr>
+          <tr><td>AlphaGenome 2, Gemini Decisions API, open-weight Runway robotics model</td><td>Tech AI</td><td class="num">2</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>OpenAI API sales jump; LangChain, Agile Robots and UForce raise big rounds</td><td>Tech AI</td><td class="num">3</td><td class="num">1</td><td class="num">6</td></tr>
+          <tr><td>In brief</td><td>Tech AI</td><td class="num">4</td><td class="num">1</td><td class="num">7</td></tr>
+          <tr><td>GDC survey: 40% of developers use gen AI; one in three laid off</td><td>Tech Gaming</td><td class="num">1</td><td class="num">1</td><td class="num">5</td></tr>
+          <tr><td>*Resident Evil Requiem* sweeps Golden Joysticks; Game Awards come to Disney+</td><td>Tech Gaming</td><td class="num">2</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>Nintendo Black Friday: Switch 2 Mario Kart bundle $499.99</td><td>Tech Gaming</td><td class="num">3</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>In brief</td><td>Tech Gaming</td><td class="num">4</td><td class="num">1</td><td class="num">7</td></tr>
+          <tr><td>Curry has an oblique tear; Markkanen out a month</td><td>Sports</td><td class="num">1</td><td class="num">1</td><td class="num">6</td></tr>
+          <tr><td>Spurs win 10th straight in Chicago; Cavs end Knicks&#39; run</td><td>Sports</td><td class="num">2</td><td class="num">1</td><td class="num">15</td></tr>
+          <tr><td>Commanders at Giants tonight; three rookie QBs set to start Sunday</td><td>Sports</td><td class="num">3</td><td class="num">1</td><td class="num">7</td></tr>
+          <tr><td>Packers without Jacobs vs. Vikings; Nacua out a &#39;significant period&#39;</td><td>Sports</td><td class="num">4</td><td class="num">1</td><td class="num">6</td></tr>
+          <tr><td>In brief</td><td>Sports</td><td class="num">5</td><td class="num">1</td><td class="num">6</td></tr>
+          <tr><td>Yella Beezy guilty of capital murder in MO3 killing, sentenced to life</td><td>Music</td><td class="num">1</td><td class="num">1</td><td class="num">4</td></tr>
+          <tr><td>Friday: Offset&#39;s *GMFU* and Tay-K&#39;s *Monsters Under My Bed*</td><td>Music</td><td class="num">2</td><td class="num">1</td><td class="num">6</td></tr>
+          <tr><td>Angie Martinez&#39;s unaired Tupac interview becomes Netflix series Nov 27</td><td>Music</td><td class="num">3</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>In brief</td><td>Music</td><td class="num">4</td><td class="num">1</td><td class="num">10</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+    <details>
+      <summary>Archive · last 5 briefs</summary>
+      <div class="inner">
+        <p class="note"><b>Brief #6 · Wednesday, November 11, 2026</b></p>
+        <p class="note">Quick hitters: Rubio tells the G7 that Trump chose to &#34;strangle&#34; Iran&#39;s regime rather than fight or make a deal; Qatar says it has at least two weeks to broker a deal · Iran&#39;s army says a tanker hit a mine east of Hormuz, and UKMTO reports another tanker struck off Oman · Treasury Secretary Bessent moved onto a military base after threats from Iran · The House kills the Hegseth impeachment 211-204, and Jim Jordan wins the House GOP leader race · Kushner says Russia and Ukraine agreed in Abu Dhabi on their biggest-ever prisoner swap · Congo&#39;s Ebola outbreak passes 11,000 cases · Hot CPI pulls stocks lower and briefly lifts the 10-year above 5%; futures bounce this morning · Anthropic&#39;s bankers weigh a higher IPO price that could value it at $1.5 trillion or more · Nvidia falls 5.5% as it hires Wachtell to investigate Huang, then rises 6% premarket · Google ships Gemini 4 Carbon; Fable 5.2 doubles rivals on a freelance-work benchmark · Nintendo&#39;s Ocarina of Time remake sells 5.2 million in four days · Deadline day: the Vikings bring back Kirk Cousins and the Chiefs land Josh Downs · The Knicks rout the 1-10 Bucks; the Bulls host the Spurs tonight · Noskova beats Gauff to become the first WTA Finals semifinalist · Future drops the &#34;Ya Hit&#34; video with Drake, Travis Scott and Sexyy Red · Lil Baby&#39;s FRESH is projected around 60K first-week units · ¡Me mola! I love it · Today&#39;s spot: the Gran Vía · Today&#39;s general strike: the Metro runs over 90% of trains, and an orange wind warning hits tonight.</p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Story</th><th>Section</th><th>Rank</th><th>Days</th><th>Sources</th></tr></thead>
+            <tbody>
+          <tr><td>Madrid corner: Gran Vía / &#34;¡Me mola!&#34;</td><td>Madrid</td><td class="num">–</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>Madrid in brief: 11N general strike transport, clashes and TSJM ruling, storm Charles</td><td>Madrid</td><td class="num">–</td><td class="num">1</td><td class="num">7</td></tr>
+          <tr><td>Rubio &#34;strangle&#34; option; Qatar two weeks; Rezaei no talks; Trump-Netanyahu call</td><td>Iran</td><td class="num">1</td><td class="num">6</td><td class="num">12</td></tr>
+          <tr><td>Mine strike east of Hormuz; UKMTO Lima tanker; IRIB claim; Didamar; LNG transits</td><td>Iran</td><td class="num">2</td><td class="num">5</td><td class="num">9</td></tr>
+          <tr><td>South Pars fire; Houthi Abqaiq claim; Orlen cancels Qatar LNG; EIA Saudi output</td><td>Iran</td><td class="num">3</td><td class="num">1</td><td class="num">8</td></tr>
+          <tr><td>Bessent on military base; Fairford plot indictment; FBI list; Argentina; Mokhber</td><td>Iran</td><td class="num">4</td><td class="num">1</td><td class="num">7</td></tr>
+          <tr><td>Iran missile output, Pezeshkian at COP31, intelligence ministry, organ sales, schools</td><td>Iran</td><td class="num">5</td><td class="num">1</td><td class="num">5</td></tr>
+          <tr><td>House kills Hegseth impeachment 211-204; Jordan elected House GOP leader</td><td>News</td><td class="num">1</td><td class="num">2</td><td class="num">7</td></tr>
+          <tr><td>Abu Dhabi: biggest prisoner swap agreed; Russian refining cut; UK arrests US soldier</td><td>News</td><td class="num">2</td><td class="num">3</td><td class="num">7</td></tr>
+          <tr><td>Congo Ebola passes 11,000 cases</td><td>News</td><td class="num">3</td><td class="num">1</td><td class="num">1</td></tr>
+          <tr><td>Knesset, Kennedys sue over arch, Trump v BBC, Haiti, Imran Khan, Coachella, Keach</td><td>News</td><td class="num">4</td><td class="num">1</td><td class="num">8</td></tr>
+          <tr><td>Hot CPI selloff; 10-year near 5%; Logan, Deutsche; futures up</td><td>Markets</td><td class="num">1</td><td class="num">2</td><td class="num">9</td></tr>
+          <tr><td>Anthropic weighs higher IPO price; Q3 revenue ~$17B; Nvidia, TSMC stakes</td><td>Markets</td><td class="num">2</td><td class="num">2</td><td class="num">9</td></tr>
+          <tr><td>Nvidia: Wachtell probe, -5.5%, Trump warned, 240,000 chips, premarket rebound</td><td>Markets</td><td class="num">3</td><td class="num">4</td><td class="num">11</td></tr>
+          <tr><td>Oil eases; WCS ~$58; gasoline; Russian diesel; Gulf loan</td><td>Markets</td><td class="num">4</td><td class="num">1</td><td class="num">5</td></tr>
+          <tr><td>CoreWeave, Costco dividend, China PPI, household debt, AAON, Hims</td><td>Markets</td><td class="num">5</td><td class="num">1</td><td class="num">6</td></tr>
+          <tr><td>Gemini 4 Carbon; Remote Labor Index; AI Futures timelines; Gemini Robotics 2.5</td><td>Tech AI</td><td class="num">1</td><td class="num">1</td><td class="num">6</td></tr>
+          <tr><td>OpenAI $10B quarter; Anthropic office tools; Mercor; Oura</td><td>Tech AI</td><td class="num">2</td><td class="num">1</td><td class="num">6</td></tr>
+          <tr><td>Chip-control push; Hochul AI testing; Grok Build leak; EU DFA; AI-free exams</td><td>Tech AI</td><td class="num">3</td><td class="num">1</td><td class="num">6</td></tr>
+          <tr><td>Ocarina of Time remake 5.2M; PS5 100M; GTA VI cloud</td><td>Tech Gaming</td><td class="num">1</td><td class="num">1</td><td class="num">5</td></tr>
+          <tr><td>Fortis closure, Nintendo DMCA, Marathon PvE, Falcom</td><td>Tech Gaming</td><td class="num">2</td><td class="num">1</td><td class="num">4</td></tr>
+          <tr><td>Tuesday NBA scores; Knicks rout Bucks; Blazers beat Thunder</td><td>Sports</td><td class="num">1</td><td class="num">1</td><td class="num">7</td></tr>
+          <tr><td>Deadline day: Cousins to Vikings, Downs to Chiefs, Hooker, Henley, Neuzil; 18 trades</td><td>Sports</td><td class="num">2</td><td class="num">6</td><td class="num">14</td></tr>
+          <tr><td>WTA Finals: Noskova beats Gauff, first semifinalist</td><td>Sports</td><td class="num">3</td><td class="num">6</td><td class="num">3</td></tr>
+          <tr><td>Future &#34;Ya Hit&#34; video</td><td>Music</td><td class="num">1</td><td class="num">1</td><td class="num">2</td></tr>
+          <tr><td>Lil Baby first week, &#34;Vultures&#34; lawsuit, Usher petition</td><td>Music</td><td class="num">2</td><td class="num">1</td><td class="num">3</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note"><b>Brief #5 · Tuesday, November 10, 2026</b></p>
+        <p class="note">Quick hitters: Rubio tells the G7 the economic squeeze on Iran is working well enough that major combat isn&#39;t needed · Iran&#39;s Guards say two tankers caught fire in Hormuz; Hegseth says &#34;we control&#34; the strait · France weighs measures over the freezer hacks it blames on the Guards; Tehran calls the claims baseless · Hegseth calls the impeachment push a &#34;farce&#34; as House Republicans pick their next leader · Russia-Ukraine talks in Abu Dhabi break for the day and resume Wednesday · Fog pile-ups on a Bulgarian motorway kill at least 11 · October CPI runs hot at 0.4%; futures fall and half-point hike bets rise · Anthropic&#39;s IPO could raise up to $64.4 billion at a valuation as high as $1.4 trillion · Oil slips below $85 and US gasoline drops under $4 · Claude Fable 5.2 sets a record on Epoch&#39;s capabilities index · Take-Two says GTA VI preorders are running &#34;far in excess&#34; of expectations · The Bills grind down the Vikings 23-6 on Monday night · The Jaguars land Jessie Bates, Davon Godchaux and Jordan Davis in one day; the deadline hits at 3 PM CT · Cooper Flagg scores 43 as Dallas beats Indiana · YouTube streams return to the Billboard charts in January · Travis Scott and Cardi B headline GTA VI&#39;s Miami festival · ¿Dónde está la parada de metro? Where is the metro stop? · Today&#39;s spot: the Puerta del Sol · A train-driver strike halts most Cercanías lines; a general strike follows Wednesday.</p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Story</th><th>Section</th><th>Rank</th><th>Days</th><th>Sources</th></tr></thead>
+            <tbody>
+          <tr><td>Madrid corner: Puerta del Sol / &#34;¿Dónde está la parada de metro?&#34;</td><td>Madrid</td><td class="num">–</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>Madrid in brief: Cercanías strike, 11-N minimums, L6 reopens, A-5/M-30 closure, weather</td><td>Madrid</td><td class="num">–</td><td class="num">1</td><td class="num">11</td></tr>
+          <tr><td>Rubio at G7; Qatar mediation; Trump &#34;effectively over&#34;; Iran&#39;s conditions</td><td>Iran</td><td class="num">1</td><td class="num">5</td><td class="num">14</td></tr>
+          <tr><td>IRGC tanker fires; Hegseth &#34;we control&#34; Hormuz; flows recovering</td><td>Iran</td><td class="num">2</td><td class="num">4</td><td class="num">8</td></tr>
+          <tr><td>France weighs response to freezer hacks; UK bases; Canada sanctions</td><td>Iran</td><td class="num">3</td><td class="num">1</td><td class="num">9</td></tr>
+          <tr><td>Saudi pipeline hit; Houthi missiles; GCC Kuwait HQ</td><td>Iran</td><td class="num">4</td><td class="num">3</td><td class="num">6</td></tr>
+          <tr><td>Iran inflation 71.4%, gas shortfall, missile site, uranium offer, US polls</td><td>Iran</td><td class="num">5</td><td class="num">1</td><td class="num">7</td></tr>
+          <tr><td>Hegseth calls impeachment &#34;farce&#34;; House and Senate GOP leader votes</td><td>News</td><td class="num">1</td><td class="num">1</td><td class="num">10</td></tr>
+          <tr><td>Abu Dhabi talks resume Wednesday; Poland arrests</td><td>News</td><td class="num">2</td><td class="num">2</td><td class="num">5</td></tr>
+          <tr><td>California rejects billionaire wealth tax</td><td>News</td><td class="num">3</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>Krakow gunman and Breivik sites</td><td>News</td><td class="num">4</td><td class="num">5</td><td class="num">2</td></tr>
+          <tr><td>Bulgaria fog crashes, Brand, Turkey blast, Knesset, China surplus, Big Bend, Crete</td><td>News</td><td class="num">5</td><td class="num">1</td><td class="num">10</td></tr>
+          <tr><td>Hot October CPI; half-point bets; Monday rally</td><td>Markets</td><td class="num">1</td><td class="num">1</td><td class="num">16</td></tr>
+          <tr><td>Anthropic IPO: up to $64.4B, up to $1.4T valuation</td><td>Markets</td><td class="num">2</td><td class="num">1</td><td class="num">9</td></tr>
+          <tr><td>Nvidia: FBI probe, lawsuit, $7.5B report, House summons</td><td>Markets</td><td class="num">3</td><td class="num">3</td><td class="num">11</td></tr>
+          <tr><td>Oil below $85; gasoline under $4; OPEC output; SPR</td><td>Markets</td><td class="num">4</td><td class="num">1</td><td class="num">6</td></tr>
+          <tr><td>SoftBank, Trade Desk, T-Head, consumer credit, Microsoft, bonuses</td><td>Markets</td><td class="num">5</td><td class="num">1</td><td class="num">6</td></tr>
+          <tr><td>Claude Fable 5.2 and Mythos 5.2; Epoch ECI record</td><td>Tech AI</td><td class="num">1</td><td class="num">1</td><td class="num">6</td></tr>
+          <tr><td>Meta Muse Ember; OpenAI Control Room; DeepMind Signal; LongCat-2.5</td><td>Tech AI</td><td class="num">2</td><td class="num">1</td><td class="num">5</td></tr>
+          <tr><td>Australia AI regulator; Moonshot; Fireworks; SpaceX; CISA pick</td><td>Tech AI</td><td class="num">3</td><td class="num">1</td><td class="num">7</td></tr>
+          <tr><td>Take-Two Q2; GTA VI preorders; decompilation; preload files</td><td>Tech Gaming</td><td class="num">1</td><td class="num">3</td><td class="num">5</td></tr>
+          <tr><td>Monday NBA scores; Flagg 43; All-Star 2028</td><td>Sports</td><td class="num">1</td><td class="num">1</td><td class="num">6</td></tr>
+          <tr><td>Bills 23-6 Vikings; Jaguars trades; Cisco; injuries; deadline today</td><td>Sports</td><td class="num">2</td><td class="num">5</td><td class="num">16</td></tr>
+          <tr><td>WTA Finals openers; Gauff v Noskova today</td><td>Sports</td><td class="num">3</td><td class="num">5</td><td class="num">3</td></tr>
+          <tr><td>YouTube returns to Billboard charts</td><td>Music</td><td class="num">1</td><td class="num">1</td><td class="num">1</td></tr>
+          <tr><td>GTA VI festival; Dre break; Snoop biopic; Nitrous; Belly album</td><td>Music</td><td class="num">2</td><td class="num">1</td><td class="num">9</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note"><b>Brief #4 · Monday, November 9, 2026</b></p>
+        <p class="note">Quick hitters: Trump meets Qatar&#39;s prime minister today as Iran pushes its two-day plan to reopen Hormuz · Iranian media blame Sunday night&#39;s blasts on Qeshm Island on a US strike · A drone strike on Iraq&#39;s Khor Mor gas field knocks about 2,800 MW off Kurdistan&#39;s grid · The Krakow gunman dies in hospital as Poland mourns · Sheikh Hasina asks for a passport to return to Bangladesh · The ANC slumps to its worst-ever local election result · Nvidia falls about 5% premarket after Jensen Huang admits an affair with a suspected Chinese spy · Futures rise and oil drops ahead of Tuesday&#39;s CPI; Citi cuts US stocks to neutral · Anthropic hunts for power in old telecom buildings amid a server shortage · GTA 6 preorders are estimated above $750M; Take-Two reports today · Bears beat the Bucs 27-24 on a last-second field goal despite four Caleb Williams interceptions · Alcaraz wins his first Paris Masters; Gauff opens the WTA Finals with a win · Austin Reaves scores 43 as the Lakers win in Detroit · The Weeknd is reported to pass 100 billion Spotify streams · Madrid: Mercado de San Miguel; Almudena holiday; general strike Wednesday.</p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Story</th><th>Section</th><th>Rank</th><th>Days</th><th>Sources</th></tr></thead>
+            <tbody>
+          <tr><td>Madrid corner: Mercado de San Miguel / &#34;¿Vamos de tapas?&#34;</td><td>Madrid</td><td class="num">–</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>Madrid in brief: 11-N general strike, Almudena closures, Atlético 1-2 Barça, weather</td><td>Madrid</td><td class="num">–</td><td class="num">1</td><td class="num">5</td></tr>
+          <tr><td>Trump meets Qatar PM; Iran two-day plan; Rubio, APEC, China envoy</td><td>Iran</td><td class="num">1</td><td class="num">4</td><td class="num">10</td></tr>
+          <tr><td>Qeshm blasts blamed on US strike</td><td>Iran</td><td class="num">2</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>IRGC denies mines cleared; VIEIRA oil slick</td><td>Iran</td><td class="num">3</td><td class="num">3</td><td class="num">3</td></tr>
+          <tr><td>Khor Mor gas field; Yemen demands; Sanaa launcher; GCC rail</td><td>Iran</td><td class="num">4</td><td class="num">1</td><td class="num">4</td></tr>
+          <tr><td>Iron Gate, food insecurity, floods, COP31</td><td>Iran</td><td class="num">5</td><td class="num">1</td><td class="num">6</td></tr>
+          <tr><td>Krakow gunman dies in hospital</td><td>News</td><td class="num">1</td><td class="num">4</td><td class="num">2</td></tr>
+          <tr><td>Hasina seeks passport to return</td><td>News</td><td class="num">2</td><td class="num">1</td><td class="num">2</td></tr>
+          <tr><td>ANC worst-ever local result</td><td>News</td><td class="num">3</td><td class="num">1</td><td class="num">2</td></tr>
+          <tr><td>Russian network and French riots; G7 Paris; Ukraine strikes; protests</td><td>News</td><td class="num">4</td><td class="num">1</td><td class="num">5</td></tr>
+          <tr><td>Lame duck, Dana White &#34;kidding&#34;, Delhi smog, Amsterdam march, Gaza</td><td>News</td><td class="num">5</td><td class="num">1</td><td class="num">6</td></tr>
+          <tr><td>Nvidia board probes Huang; stock slides</td><td>Markets</td><td class="num">1</td><td class="num">2</td><td class="num">10</td></tr>
+          <tr><td>Futures up, oil down; Citi and HSBC calls; CPI week</td><td>Markets</td><td class="num">2</td><td class="num">4</td><td class="num">6</td></tr>
+          <tr><td>Data center spending, Cybertruck refunds, Terafab, GE Vernova</td><td>Markets</td><td class="num">3</td><td class="num">1</td><td class="num">4</td></tr>
+          <tr><td>Anthropic seeks power in old telecom buildings</td><td>Tech AI</td><td class="num">1</td><td class="num">1</td><td class="num">1</td></tr>
+          <tr><td>AI stock-sale wave; Sequoia shake-up</td><td>Tech AI</td><td class="num">2</td><td class="num">1</td><td class="num">2</td></tr>
+          <tr><td>DeepSeek Harness; Apple agentic push; Trump AI remark</td><td>Tech AI</td><td class="num">3</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>GTA 6 preorders; Take-Two earnings; Layden; PS Plus</td><td>Tech Gaming</td><td class="num">1</td><td class="num">2</td><td class="num">5</td></tr>
+          <tr><td>Sunday NBA scores; Reaves 43</td><td>Sports</td><td class="num">1</td><td class="num">1</td><td class="num">1</td></tr>
+          <tr><td>Bears 27-24 Bucs; Bengals win in Madrid; injuries; Jones stays</td><td>Sports</td><td class="num">2</td><td class="num">4</td><td class="num">9</td></tr>
+          <tr><td>Alcaraz wins Paris; Gauff opens WTA Finals; Linette</td><td>Sports</td><td class="num">3</td><td class="num">4</td><td class="num">3</td></tr>
+          <tr><td>The Weeknd 100B Spotify streams claim</td><td>Music</td><td class="num">1</td><td class="num">1</td><td class="num">1</td></tr>
+          <tr><td>OCTANE streams; Ye attendance list; Gunna</td><td>Music</td><td class="num">2</td><td class="num">3</td><td class="num">3</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note"><b>Brief #3 · Sunday, November 8, 2026</b></p>
+        <p class="note">Quick hitters: Iran&#39;s Guards say three tankers are burning in the Strait of Hormuz; UKMTO confirms a tanker fire off Oman · Debris from intercepted missiles damages Aramco&#39;s tower in Riyadh&#39;s financial district · Tehran mocks CENTCOM&#39;s new &#34;Iron Gate&#34; task force for Iran&#39;s land borders · Poland treats the Krakow shooting as terrorism and begins two days of mourning · Axios: the House is poised to impeach Pete Hegseth · A 5.7 quake injures more than 20 in central Japan · Futures reopen tonight ahead of Tuesday&#39;s CPI · Gulf stocks slip as traders wait on Trump&#39;s next Iran move · Anthropic signs a $3.4B deal for gas generators to power data centers, the FT reports · GTA 6 pre-loads Tuesday at 212GB; Nintendo rules out more Switch 2 price hikes · Curry scores 41 as the Warriors beat Orlando in overtime; Dončić questionable at Detroit · Bears host the Bucs tonight without Kyle Monangai; Lamar Jackson vows to return · Alcaraz and Shelton play the Paris final; WTA Finals open this afternoon · Ye&#39;s Arlington show is billed as a new US rap attendance record · Madrid: Plaza Mayor.</p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Story</th><th>Section</th><th>Rank</th><th>Days</th><th>Sources</th></tr></thead>
+            <tbody>
+          <tr><td>Madrid corner: Plaza Mayor / &#34;¿Me pones un café con leche?&#34;</td><td>Madrid</td><td class="num">–</td><td class="num">1</td><td class="num">1</td></tr>
+          <tr><td>Madrid in brief: NFL at Bernabéu, Almudena holiday, teachers&#39; strike, Real Madrid 3-0</td><td>Madrid</td><td class="num">–</td><td class="num">1</td><td class="num">6</td></tr>
+          <tr><td>IRGC says 3 tankers ablaze; UKMTO Khasab fire; UAE rescue</td><td>Iran</td><td class="num">1</td><td class="num">2</td><td class="num">4</td></tr>
+          <tr><td>Aramco Riyadh tower hit by debris; Houthi missiles; Yemen strikes</td><td>Iran</td><td class="num">2</td><td class="num">1</td><td class="num">5</td></tr>
+          <tr><td>Task Force Iron Gate; IRGC dismisses; M/V Huda</td><td>Iran</td><td class="num">3</td><td class="num">2</td><td class="num">4</td></tr>
+          <tr><td>Diplomacy: UAE optimism, Katz, Hegseth video</td><td>Iran</td><td class="num">4</td><td class="num">3</td><td class="num">4</td></tr>
+          <tr><td>Executions, Iraq $60B loss, refinery smoke, poverty</td><td>Iran</td><td class="num">5</td><td class="num">1</td><td class="num">5</td></tr>
+          <tr><td>Krakow attack: terror probe, mourning</td><td>News</td><td class="num">1</td><td class="num">3</td><td class="num">4</td></tr>
+          <tr><td>Hegseth impeachment; Walters exits</td><td>News</td><td class="num">2</td><td class="num">1</td><td class="num">5</td></tr>
+          <tr><td>Dana White to meet Trump</td><td>News</td><td class="num">3</td><td class="num">2</td><td class="num">2</td></tr>
+          <tr><td>Japan quake; Egypt train crash</td><td>News</td><td class="num">4</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>Zaporizhzhia, Patriots, Senegal, El Hierro, NZ, Ben-Gvir</td><td>News</td><td class="num">5</td><td class="num">1</td><td class="num">6</td></tr>
+          <tr><td>Weekend markets; CPI week</td><td>Markets</td><td class="num">1</td><td class="num">3</td><td class="num">3</td></tr>
+          <tr><td>Gulf stocks, China energy, Apple tax</td><td>Markets</td><td class="num">2</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>Anthropic $3.4B generator deal</td><td>Tech AI</td><td class="num">1</td><td class="num">1</td><td class="num">2</td></tr>
+          <tr><td>AI-safety PAC midterm wins</td><td>Tech AI</td><td class="num">2</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>TSMC 3D memory; H200 buyers; GPT-6.1 Sol</td><td>Tech AI</td><td class="num">3</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>Cyera, Clutch, Apollo deals</td><td>Tech AI</td><td class="num">4</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>GTA 6 pre-load; Switch 2 prices; Pulse Elevate delay</td><td>Tech Gaming</td><td class="num">1</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>Saturday NBA scores; Curry 41; Dončić questionable</td><td>Sports</td><td class="num">1</td><td class="num">1</td><td class="num">2</td></tr>
+          <tr><td>NFL Week 9: Monangai out, Lamar, deadline</td><td>Sports</td><td class="num">2</td><td class="num">3</td><td class="num">9</td></tr>
+          <tr><td>Paris final; WTA Finals open; Liu wins Hong Kong</td><td>Sports</td><td class="num">3</td><td class="num">3</td><td class="num">4</td></tr>
+          <tr><td>Ye Arlington attendance claim</td><td>Music</td><td class="num">1</td><td class="num">2</td><td class="num">3</td></tr>
+          <tr><td>Harlow streams, Snoop biopic, Latto/Toliver</td><td>Music</td><td class="num">2</td><td class="num">1</td><td class="num">3</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note"><b>Brief #2 · Saturday, November 7, 2026</b></p>
+        <p class="note">Quick hitters: Blasts heard around the Strait of Hormuz; Iran&#39;s IRGC says two tankers hit mines and caught fire · Qatar says Washington and Tehran are still working toward a deal; Erdoğan urges Trump to stick with diplomacy · The US widens the squeeze with a land-trade task force and a $20M nuclear tip reward · Krakow gunman kills six in the Main Market Square; three more bodies found at his home · Herzog picks Gadi Eisenkot over Netanyahu to form Israel&#39;s next government · Trump offers Dana White the press secretary job; CNN says he said no · Chips bounce Friday, but the S&amp;P ends down about 2.7% on the week · Berkshire&#39;s operating profit falls 6% as it buys back $9.6B of stock · Congress turns up the heat on Jensen Huang after reports tie him to an alleged Chinese spy · Mass Effect fans take a #SaveMassEffect truck to EA&#39;s headquarters · Dončić scores 53 as the Lakers beat Portland; Wembanyama has 30 and 14 · Rybakina pulls out of the WTA Finals; Alcaraz meets Shelton in Sunday&#39;s Paris final · Bears host the Bucs Sunday night; WR trades expected before Tuesday&#39;s deadline · Lil Baby&#39;s FRESH posts a big Spotify opening day and drops a new video · Ye plays AT&amp;T Stadium tonight, chasing his own attendance record · Madrid: Palacio Real.</p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Story</th><th>Section</th><th>Rank</th><th>Days</th><th>Sources</th></tr></thead>
+            <tbody>
+          <tr><td>Madrid corner: Palacio Real / &#34;Una caña, por favor&#34;</td><td>Madrid</td><td class="num">–</td><td class="num">1</td><td class="num">1</td></tr>
+          <tr><td>Hormuz blasts; IRGC tanker mine claim; M/V Huda</td><td>Iran</td><td class="num">1</td><td class="num">1</td><td class="num">5</td></tr>
+          <tr><td>Qatar says talks alive; Erdoğan call; China channel</td><td>Iran</td><td class="num">2</td><td class="num">2</td><td class="num">5</td></tr>
+          <tr><td>Qeshm strike, Trump comments</td><td>Iran</td><td class="num">3</td><td class="num">2</td><td class="num">3</td></tr>
+          <tr><td>Land-trade blockade; $20M nuclear reward</td><td>Iran</td><td class="num">4</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>Oil weekly drop; Hormuz flows</td><td>Iran</td><td class="num">5</td><td class="num">2</td><td class="num">2</td></tr>
+          <tr><td>Iraq militias, missile claim, Iran-Russia</td><td>Iran</td><td class="num">6</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>Krakow mass shooting</td><td>News</td><td class="num">1</td><td class="num">2</td><td class="num">3</td></tr>
+          <tr><td>Eisenkot picked to form Israeli government</td><td>News</td><td class="num">2</td><td class="num">1</td><td class="num">2</td></tr>
+          <tr><td>Dana White offered press secretary; declined per CNN</td><td>News</td><td class="num">3</td><td class="num">1</td><td class="num">2</td></tr>
+          <tr><td>Miller Doctrine; DOJ order on Democrats</td><td>News</td><td class="num">4</td><td class="num">2</td><td class="num">2</td></tr>
+          <tr><td>Houston limits ICE help; Democratic state sweeps</td><td>News</td><td class="num">5</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>Citibank Tampa shooting; Albania protests</td><td>News</td><td class="num">6</td><td class="num">1</td><td class="num">2</td></tr>
+          <tr><td>Friday close, weekly loss</td><td>Markets</td><td class="num">1</td><td class="num">2</td><td class="num">1</td></tr>
+          <tr><td>Berkshire Q3</td><td>Markets</td><td class="num">2</td><td class="num">1</td><td class="num">1</td></tr>
+          <tr><td>Next week: CPI, OPEC</td><td>Markets</td><td class="num">3</td><td class="num">1</td><td class="num">1</td></tr>
+          <tr><td>Jensen Huang spy-ties scrutiny</td><td>Tech AI</td><td class="num">1</td><td class="num">1</td><td class="num">4</td></tr>
+          <tr><td>Reaction to OpenAI ETH disproof</td><td>Tech AI</td><td class="num">2</td><td class="num">1</td><td class="num">1</td></tr>
+          <tr><td>Wiener, Ocient, Cybertruck</td><td>Tech AI</td><td class="num">3</td><td class="num">1</td><td class="num">3</td></tr>
+          <tr><td>#SaveMassEffect truck, BioWare petition</td><td>Tech Gaming</td><td class="num">1</td><td class="num">2</td><td class="num">2</td></tr>
+          <tr><td>Dončić 53; Friday scores</td><td>Sports</td><td class="num">1</td><td class="num">2</td><td class="num">3</td></tr>
+          <tr><td>NFL Week 9: WR trade market, Lock, Murray, Bears-Bucs</td><td>Sports</td><td class="num">2</td><td class="num">2</td><td class="num">6</td></tr>
+          <tr><td>Paris final set; Rybakina out of WTA Finals</td><td>Sports</td><td class="num">3</td><td class="num">2</td><td class="num">3</td></tr>
+          <tr><td>FRESH and &#34;Ya Hit&#34; opening streams</td><td>Music</td><td class="num">1</td><td class="num">2</td><td class="num">3</td></tr>
+          <tr><td>Ye at AT&amp;T Stadium</td><td>Music</td><td class="num">2</td><td class="num">1</td><td class="num">2</td></tr>
+          <tr><td>Nicki Minaj / Chucky creator</td><td>Music</td><td class="num">3</td><td class="num">1</td><td class="num">1</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <footer>Built from the sources in config/sources.yaml. Facts, numbers and links come only from this run. Quotes are kept short; everything else is summarized.</footer>
+
+</div>
+</body>
+</html>
